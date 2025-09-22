@@ -82,6 +82,10 @@ export default function RootLayout({
 
 \`\`\`tsx
 // app/blog/[slug]/page.tsx
+export async function generateStaticParams() {
+  return []
+}
+
 export default function BlogPost({ params }: { params: { slug: string } }) {
   return <h1>포스트: {params.slug}</h1>
 }

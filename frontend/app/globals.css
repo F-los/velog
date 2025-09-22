@@ -75,8 +75,18 @@ a {
   color: white;
 }
 
+/* 커스텀 그라디언트 클래스 */
+.bg-purple-gradient {
+  background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+}
+
+.bg-purple-gradient-light {
+  background: linear-gradient(135deg, #e9d5ff 0%, #f3e8ff 100%);
+}
+
 /* 애니메이션 클래스 */
 .animate-gradient {
+  background: linear-gradient(135deg, #9333ea 0%, #7c3aed 50%, #9333ea 100%);
   background-size: 200% 200%;
   animation: gradient 3s ease infinite;
 }

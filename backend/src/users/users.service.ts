@@ -43,7 +43,8 @@ export class UsersService {
   }
 
   async findByUsername(username: string): Promise<User | undefined> {
-    return this.usersRepository.findOne({ where: { username } });
+    const user = await this.usersRepository.findOne({ where: { username } });
+    return user || undefined;
   }
 
   async validatePassword(user: User, password: string): Promise<boolean> {
