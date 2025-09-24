@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',
   trailingSlash: true,
   images: {
     unoptimized: true
@@ -7,14 +8,7 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://fast-cow-flos-a3aa5bcd.koyeb.app',
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'https://fast-cow-flos-a3aa5bcd.koyeb.app'}/:path*`,
-      },
-    ]
-  },
+  // Note: rewrites don't work with static export, will use client-side API calls instead
 }
 
 module.exports = nextConfig
