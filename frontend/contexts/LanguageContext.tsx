@@ -105,26 +105,42 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [language, setLanguage] = useState<Language>('en'); // Default to English
 
   useEffect(() => {
-    const saved = localStorage.getItem('language') as Language;
-    if (saved && (saved === 'en' || saved === 'ko')) {
-      setLanguage(saved);
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('language') as Language;
+      if (saved && (saved === 'en' || saved === 'ko')) {
+        setLanguage(saved);
+      }
     }
   }, []);
 
   const handleSetLanguage = (lang: Language) => {
     setLanguage(lang);
-    localStorage.setItem('language', lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('language', lang);
+    }
   };
 
   const t = (key: string): string => {
-    const keys = key.split('.');
-    let value: any = translations[language];
+    // Always use the current language, defaulting to 'en'
+    const currentLang = language || 'en';
+    const translation = translations[currentLang as Language];
 
-    for (const k of keys) {
-      value = value?.[k];
+    if (!translation) {
+      return key;
     }
 
-    return value || key;
+    const keys = key.split('.');
+    let value: any = translation;
+
+    for (const k of keys) {
+      if (value && typeof value === 'object') {
+        value = value[k];
+      } else {
+        return key; // Return the key if path doesn't exist
+      }
+    }
+
+    return typeof value === 'string' ? value : key;
   };
 
   return (
