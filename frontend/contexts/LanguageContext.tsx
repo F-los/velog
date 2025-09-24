@@ -102,14 +102,14 @@ const translations = {
 };
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en'); // Default to English
+  const [language, setLanguage] = useState<Language>('en');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('language') as Language;
-      if (saved && (saved === 'en' || saved === 'ko')) {
-        setLanguage(saved);
-      }
+    setMounted(true);
+    const saved = localStorage.getItem('language') as Language;
+    if (saved && (saved === 'en' || saved === 'ko')) {
+      setLanguage(saved);
     }
   }, []);
 
@@ -121,9 +121,9 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const t = (key: string): string => {
-    // Always use the current language, defaulting to 'en'
-    const currentLang = language || 'en';
-    const translation = translations[currentLang as Language];
+    // For static export compatibility, always use English during SSR
+    const currentLang = mounted ? language : 'en';
+    const translation = translations[currentLang];
 
     if (!translation) {
       return key;
@@ -136,7 +136,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (value && typeof value === 'object') {
         value = value[k];
       } else {
-        return key; // Return the key if path doesn't exist
+        return key;
       }
     }
 
