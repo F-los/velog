@@ -15,6 +15,7 @@ import { AuthModule } from './auth/auth.module';
     ...(process.env.DISABLE_DB !== 'true' ? [
       TypeOrmModule.forRoot({
         type: 'postgres',
+        url: process.env.DATABASE_URL,
         host: process.env.DATABASE_HOST || 'localhost',
         port: parseInt(process.env.DATABASE_PORT || '5432', 10),
         username: process.env.DATABASE_USER || 'postgres',
@@ -23,6 +24,7 @@ import { AuthModule } from './auth/auth.module';
         autoLoadEntities: true,
         synchronize: process.env.NODE_ENV !== 'production',
         logging: process.env.NODE_ENV === 'development',
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
       })
     ] : []),
     ...(process.env.DISABLE_DB !== 'true' ? [UsersModule, PostsModule, AuthModule] : []),
