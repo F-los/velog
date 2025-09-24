@@ -3,7 +3,6 @@ services:
     type: web
     git:
       branch: main
-      build_command: npm prune --production
       run_command: npm run start:prod
     instance_type: nano
     env:
