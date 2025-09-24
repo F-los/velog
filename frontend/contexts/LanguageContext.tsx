@@ -110,6 +110,9 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const saved = localStorage.getItem('language') as Language;
     if (saved && (saved === 'en' || saved === 'ko')) {
       setLanguage(saved);
+    } else {
+      // Force re-render after mount to apply language
+      setLanguage('en');
     }
   }, []);
 
@@ -121,8 +124,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const t = (key: string): string => {
-    // Use current language setting for better multilingual experience
-    const currentLang = language;
+    // Prevent hydration mismatch while maintaining language functionality
+    const currentLang = mounted ? language : 'en';
     const translation = translations[currentLang];
 
     if (!translation) {
