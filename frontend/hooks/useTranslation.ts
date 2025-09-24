@@ -6,6 +6,7 @@ import { translations, Language, TranslationKey } from '@/lib/translations'
 export function useTranslation() {
   const [language, setLanguageState] = useState<Language>('en')
   const [mounted, setMounted] = useState(false)
+  const [forceUpdate, setForceUpdate] = useState(0)
 
   useEffect(() => {
     // Check for saved language preference
@@ -19,6 +20,8 @@ export function useTranslation() {
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
     localStorage.setItem('language', lang)
+    // 강제 리렌더링을 위한 카운터 증가
+    setForceUpdate(prev => prev + 1)
   }
 
   const t = (key: string): string => {
@@ -37,6 +40,7 @@ export function useTranslation() {
     language,
     setLanguage,
     t,
-    mounted
+    mounted,
+    forceUpdate // 컴포넌트가 이 값을 의존하여 리렌더링되도록 함
   }
 }
