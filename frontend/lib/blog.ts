@@ -4,7 +4,7 @@ import matter from 'gray-matter';
 import readingTime from 'reading-time';
 import { BlogPost, BlogCategory } from '@/types/blog';
 
-const postsDirectory = path.join(process.cwd(), 'content/blog');
+const postsDirectory = path.join(process.cwd(), 'blog');
 
 export function getAllPosts(): BlogPost[] {
   if (!fs.existsSync(postsDirectory)) {
