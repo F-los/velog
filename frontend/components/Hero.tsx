@@ -2,8 +2,11 @@
 
 import { motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 const Hero = () => {
+  const { t } = useLanguage()
+
   return (
     <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* Background Pattern */}
@@ -29,7 +32,7 @@ const Hero = () => {
             transition={{ delay: 0.2 }}
             className="text-purple-600 font-medium text-lg mb-4"
           >
-            안녕하세요! 👋
+            {t('hero.greeting')}
           </motion.p>
 
           {/* Main Title */}
@@ -39,11 +42,10 @@ const Hero = () => {
             transition={{ delay: 0.4 }}
             className="text-5xl md:text-7xl font-bold mb-6 text-gray-900"
           >
-            저는{' '}
+            {t('hero.intro')}{' '}
             <span className="text-purple-600 font-bold">
-              김태회
+              {t('hero.name')}
             </span>
-            입니다
           </motion.h1>
 
           {/* Subtitle */}
@@ -52,9 +54,8 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
             className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed"
-          >
-            <span className="font-semibold text-purple-700">확장 가능하고 안정적인 백엔드 시스템</span>을 만드는 것을 좋아하는 개발자입니다
-          </motion.p>
+            dangerouslySetInnerHTML={{ __html: t('hero.description') }}
+          />
 
           {/* Tech Stack Icons */}
           <motion.div
@@ -90,7 +91,7 @@ const Hero = () => {
               onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
               className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              프로젝트 보기
+{t('hero.cta.projects')}
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -98,7 +99,7 @@ const Hero = () => {
               onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
               className="border-2 border-purple-600 text-purple-600 px-8 py-3 rounded-full font-medium hover:bg-purple-600 hover:text-white transition-all duration-300"
             >
-              연락하기
+{t('hero.cta.contact')}
             </motion.button>
           </motion.div>
         </motion.div>
@@ -117,7 +118,7 @@ const Hero = () => {
           className="flex flex-col items-center cursor-pointer"
           onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
         >
-          <span className="text-sm text-gray-500 mb-2">스크롤하세요</span>
+<span className="text-sm text-gray-500 mb-2">{t('hero.scroll')}</span>
           <ChevronDown size={24} className="text-purple-600" />
         </motion.div>
       </motion.div>

@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Languages } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const { language, setLanguage, t } = useLanguage()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,14 +19,18 @@ const Navigation = () => {
   }, [])
 
   const menuItems = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'Experience', href: '#experience' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Contact', href: '#contact' },
+    { name: t('nav.home'), href: '#home' },
+    { name: t('nav.about'), href: '#about' },
+    { name: t('nav.skills'), href: '#skills' },
+    { name: t('nav.experience'), href: '#experience' },
+    { name: t('nav.projects'), href: '#projects' },
+    { name: t('nav.blog'), href: '/blog' },
+    { name: t('nav.contact'), href: '#contact' },
   ]
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'ko' : 'en')
+  }
 
   const scrollToSection = (href: string) => {
     if (href.startsWith('/')) {
@@ -53,14 +59,14 @@ const Navigation = () => {
           {/* Logo */}
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="font-bold text-xl bg-purple-gradient bg-clip-text text-transparent cursor-pointer"
+            className="font-bold text-xl text-purple-600 cursor-pointer"
             onClick={() => scrollToSection('#home')}
           >
-            김태회
+            {t('hero.name')}
           </motion.div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex items-center space-x-8">
             {menuItems.map((item) => (
               <motion.button
                 key={item.name}
@@ -72,15 +78,39 @@ const Navigation = () => {
                 {item.name}
               </motion.button>
             ))}
+
+            {/* Language Toggle Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={toggleLanguage}
+              className="flex items-center space-x-2 px-3 py-1 rounded-full border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300"
+            >
+              <Languages size={16} />
+              <span className="text-sm font-medium">{language.toUpperCase()}</span>
+            </motion.button>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* Mobile Menu Button and Language Toggle */}
+          <div className="md:hidden flex items-center space-x-2">
+            {/* Mobile Language Toggle */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={toggleLanguage}
+              className="flex items-center space-x-1 px-2 py-1 rounded-full border border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300"
+            >
+              <Languages size={14} />
+              <span className="text-xs font-medium">{language.toUpperCase()}</span>
+            </motion.button>
+
+            <button
+              className="p-2"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}

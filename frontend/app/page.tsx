@@ -4,8 +4,11 @@ import { Github, Linkedin, Mail } from 'lucide-react'
 import Navigation from '@/components/Navigation'
 import Hero from '@/components/Hero'
 import About from '@/components/About'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function Home() {
+  const { t } = useLanguage()
+
   return (
     <div className="bg-white">
       {/* Navigation */}
@@ -32,7 +35,7 @@ export default function Home() {
             </a>
           </div>
           <p className="text-gray-400">
-            © 2024 김태회. Made with ❤️ and Next.js
+            {t('footer.copyright')}
           </p>
         </div>
       </footer>
