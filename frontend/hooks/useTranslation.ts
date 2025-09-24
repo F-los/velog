@@ -21,28 +21,15 @@ export function useTranslation() {
     localStorage.setItem('language', lang)
   }
 
-  const t = (key: TranslationKey): string => {
-    // Return the key if not mounted yet to prevent hydration mismatch
-    if (!mounted) {
-      return key
-    }
-
+  const t = (key: string): string => {
     const translation = translations[language]
+
     if (!translation) {
       return key
     }
 
-    const keys = key.split('.') as (keyof typeof translation)[]
-    let value: any = translation
-
-    for (const k of keys) {
-      if (value && typeof value === 'object') {
-        value = value[k]
-      } else {
-        return key
-      }
-    }
-
+    // 평면적 구조에서 직접 키로 접근
+    const value = translation[key as keyof typeof translation]
     return typeof value === 'string' ? value : key
   }
 

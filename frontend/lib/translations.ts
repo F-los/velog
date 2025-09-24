@@ -12,7 +12,7 @@ export const translations = {
     // Hero Section
     'hero.greeting': 'Hello! 👋',
     'hero.intro': 'I am',
-    'hero.name': 'Taehoe Kim',
+    'hero.name': 'Taewhei Kim',
     'hero.description': 'A developer who loves building <strong>scalable and reliable backend systems</strong>',
     'hero.cta.projects': 'View Projects',
     'hero.cta.contact': 'Contact Me',
@@ -40,7 +40,7 @@ export const translations = {
     'about.philosophy.desc': 'I strive to create better software through readable code, test-driven development, and continuous learning.',
 
     // Footer
-    'footer.copyright': '© 2024 Taehoe Kim. Made with ❤️ and Next.js',
+    'footer.copyright': '© 2024 Taewhei Kim. Made with ❤️ and Next.js',
   },
   ko: {
     // Navigation

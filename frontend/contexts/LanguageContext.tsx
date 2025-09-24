@@ -26,7 +26,7 @@ const translations = {
     // Hero Section
     'hero.greeting': 'Hello! 👋',
     'hero.intro': 'I am',
-    'hero.name': 'Taehoe Kim',
+    'hero.name': 'Taewhei Kim',
     'hero.description': 'A developer who loves building <strong>scalable and reliable backend systems</strong>',
     'hero.cta.projects': 'View Projects',
     'hero.cta.contact': 'Contact Me',
