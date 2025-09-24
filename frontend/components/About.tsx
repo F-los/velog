@@ -2,10 +2,10 @@
 
 import { motion } from 'framer-motion'
 import { Code2, Server, Cloud, Zap } from 'lucide-react'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useTranslation } from '@/hooks/useTranslation'
 
 const About = () => {
-  const { t } = useLanguage()
+  const { t } = useTranslation()
 
   const highlights = [
     {

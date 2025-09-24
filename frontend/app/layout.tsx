@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import { LanguageProvider } from '@/contexts/LanguageContext'
 
 export const metadata: Metadata = {
   title: 'Taehoe Kim - Backend Developer Portfolio',
@@ -28,11 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className="font-sans antialiased bg-white text-gray-900">
-        <LanguageProvider>
-          <div className="min-h-screen">
-            {children}
-          </div>
-        </LanguageProvider>
+        <div className="min-h-screen">
+          {children}
+        </div>
       </body>
     </html>
   )

@@ -5,10 +5,10 @@ import Navigation from '@/components/Navigation'
 import Hero from '@/components/Hero'
 import About from '@/components/About'
 import ClientOnly from '@/components/ClientOnly'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useTranslation } from '@/hooks/useTranslation'
 
 export default function Home() {
-  const { t } = useLanguage()
+  const { t } = useTranslation()
 
   return (
     <ClientOnly>

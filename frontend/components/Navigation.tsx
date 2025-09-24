@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Menu, X, Languages } from 'lucide-react'
-import { useLanguage } from '@/contexts/LanguageContext'
+import { useTranslation } from '@/hooks/useTranslation'
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const { language, setLanguage, t } = useLanguage()
+  const { language, setLanguage, t } = useTranslation()
 
   useEffect(() => {
     const handleScroll = () => {
