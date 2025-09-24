@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Taehoe Kim - Backend Developer Portfolio',
+  title: 'Taewhei Kim - Backend Developer Portfolio',
   description: 'Portfolio of Taehoe Kim, a developer who loves building scalable and reliable backend systems.',
   keywords: ['backend', 'developer', 'portfolio', 'Java', 'Spring Boot', 'Python', 'Node.js', 'AWS'],
   authors: [{ name: 'Taehoe Kim' }],
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Taehoe Kim - Backend Developer Portfolio',
+    title: 'Taewhei Kim - Backend Developer Portfolio',
     description: 'A developer who loves building scalable and reliable backend systems',
   },
 }
