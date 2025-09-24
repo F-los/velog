@@ -3,7 +3,8 @@ services:
     type: web
     git:
       branch: main
-      run_command: npm run start:prod
+      docker:
+        dockerfile: Dockerfile
     instance_type: nano
     env:
       - PORT=8000
