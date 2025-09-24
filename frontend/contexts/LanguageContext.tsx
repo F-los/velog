@@ -121,8 +121,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const t = (key: string): string => {
-    // For static export compatibility, always use English during SSR
-    const currentLang = mounted ? language : 'en';
+    // Use current language setting for better multilingual experience
+    const currentLang = language;
     const translation = translations[currentLang];
 
     if (!translation) {
