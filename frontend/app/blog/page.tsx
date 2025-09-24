@@ -5,59 +5,53 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, Tag, Search, Filter } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { BlogPost, BlogCategory } from '@/types/blog';
 import Navigation from '@/components/Navigation';
 
-// Mock data for now - will be replaced with actual data
-const mockPosts: BlogPost[] = [
-  {
-    slug: 'next-js-app-router-guide',
-    title: 'Next.js App Router 완벽 가이드',
-    excerpt: 'Next.js 13에서 도입된 App Router의 주요 특징과 사용법을 자세히 알아보겠습니다.',
-    content: '',
-    date: '2024-01-15',
-    author: '김태회',
-    category: 'Frontend',
-    tags: ['Next.js', 'React', 'TypeScript'],
-    readingTime: '5 min read',
-    image: '/blog/nextjs-app-router.jpg'
-  },
-  {
-    slug: 'docker-kubernetes-deployment',
-    title: 'Docker와 Kubernetes를 활용한 배포 자동화',
-    excerpt: '컨테이너 기반의 현대적인 배포 파이프라인을 구축하는 방법을 단계별로 설명합니다.',
-    content: '',
-    date: '2024-01-10',
-    author: '김태회',
-    category: 'DevOps',
-    tags: ['Docker', 'Kubernetes', 'CI/CD'],
-    readingTime: '8 min read',
-  },
-  {
-    slug: 'spring-boot-security-jwt',
-    title: 'Spring Boot에서 JWT 인증 구현하기',
-    excerpt: 'Spring Security와 JWT를 사용한 안전한 인증 시스템 구축 방법을 알아봅시다.',
-    content: '',
-    date: '2024-01-05',
-    author: '김태회',
-    category: 'Backend',
-    tags: ['Spring Boot', 'JWT', 'Security'],
-    readingTime: '12 min read',
-  }
-];
-
-const mockCategories: BlogCategory[] = [
-  { name: 'Frontend', slug: 'frontend', description: '프론트엔드 개발', postCount: 1 },
-  { name: 'Backend', slug: 'backend', description: '백엔드 개발', postCount: 1 },
-  { name: 'DevOps', slug: 'devops', description: '데브옵스', postCount: 1 },
-];
+interface Post {
+  id: number;
+  title: string;
+  content: string;
+  category: string;
+  tags: string[];
+  createdAt: string;
+  author: {
+    id: number;
+    username: string;
+    email: string;
+  };
+}
 
 export default function BlogPage() {
-  const [posts, setPosts] = useState<BlogPost[]>(mockPosts);
-  const [categories, setCategories] = useState<BlogCategory[]>(mockCategories);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>(mockPosts);
+  const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/posts');
+        if (response.ok) {
+          const fetchedPosts = await response.json();
+          setPosts(fetchedPosts);
+
+          // Extract unique categories
+          const uniqueCategories = Array.from(
+            new Set(fetchedPosts.map((post: Post) => post.category).filter(Boolean))
+          ) as string[];
+          setCategories(uniqueCategories);
+        }
+      } catch (error) {
+        console.error('Failed to fetch posts:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
 
   useEffect(() => {
     let result = posts;
@@ -65,7 +59,7 @@ export default function BlogPage() {
     // Category filter
     if (selectedCategory !== 'all') {
       result = result.filter(post =>
-        post.category.toLowerCase() === selectedCategory.toLowerCase()
+        post.category?.toLowerCase() === selectedCategory.toLowerCase()
       );
     }
 
@@ -73,44 +67,36 @@ export default function BlogPage() {
     if (searchQuery) {
       result = result.filter(post =>
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }
 
     setFilteredPosts(result);
   }, [posts, selectedCategory, searchQuery]);
 
-  const PostCard = ({ post }: { post: BlogPost }) => (
+  const PostCard = ({ post }: { post: Post }) => (
     <motion.article
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -5 }}
       className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden group"
     >
-      {post.image && (
-        <div className="aspect-video overflow-hidden">
-          <img
-            src={post.image}
-            alt={post.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-      )}
-
       <div className="p-6">
         <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
           <div className="flex items-center gap-1">
             <Calendar size={14} />
-            {format(new Date(post.date), 'yyyy년 M월 d일', { locale: ko })}
+            {format(new Date(post.createdAt), 'yyyy년 M월 d일', { locale: ko })}
           </div>
           <div className="flex items-center gap-1">
             <Clock size={14} />
-            {post.readingTime}
+            {Math.ceil(post.content.length / 200)} min read
           </div>
-          <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">
-            {post.category}
-          </span>
+          {post.category && (
+            <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">
+              {post.category}
+            </span>
+          )}
         </div>
 
         <h2 className="text-xl font-bold mb-3 group-hover:text-purple-600 transition-colors line-clamp-2">
@@ -118,23 +104,31 @@ export default function BlogPage() {
         </h2>
 
         <p className="text-gray-600 mb-4 line-clamp-3">
-          {post.excerpt}
+          {post.content.length > 150
+            ? post.content.substring(0, 150) + '...'
+            : post.content}
         </p>
 
-        <div className="flex flex-wrap gap-2 mb-4">
-          {post.tags.map((tag) => (
-            <span
-              key={tag}
-              className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-600 rounded-md text-sm"
-            >
-              <Tag size={12} />
-              {tag}
-            </span>
-          ))}
+        {post.tags && post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-600 rounded-md text-sm"
+              >
+                <Tag size={12} />
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="text-sm text-gray-500 mb-3">
+          작성자: {post.author.username}
         </div>
 
         <a
-          href={`/blog/${post.slug}`}
+          href={`/blog/${post.id}`}
           className="inline-flex items-center text-purple-600 font-medium hover:text-purple-700 transition-colors"
         >
           더 읽기 →
@@ -199,15 +193,15 @@ export default function BlogPage() {
               </button>
               {categories.map((category) => (
                 <button
-                  key={category.slug}
-                  onClick={() => setSelectedCategory(category.slug)}
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                    selectedCategory === category.slug
+                    selectedCategory === category
                       ? 'bg-purple-600 text-white'
                       : 'bg-white text-gray-600 hover:bg-purple-50'
                   }`}
                 >
-                  {category.name} ({category.postCount})
+                  {category} ({posts.filter(post => post.category === category).length})
                 </button>
               ))}
             </div>
@@ -216,14 +210,21 @@ export default function BlogPage() {
 
         {/* Posts Grid */}
         <section className="max-w-6xl mx-auto px-4 pb-16">
-          {filteredPosts.length === 0 ? (
+          {isLoading ? (
             <div className="text-center py-16">
-              <p className="text-gray-500 text-lg">검색 결과가 없습니다.</p>
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
+              <p className="text-gray-500 text-lg">포스트를 불러오는 중...</p>
+            </div>
+          ) : filteredPosts.length === 0 ? (
+            <div className="text-center py-16">
+              <p className="text-gray-500 text-lg">
+                {posts.length === 0 ? '아직 작성된 포스트가 없습니다.' : '검색 결과가 없습니다.'}
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredPosts.map((post) => (
-                <PostCard key={post.slug} post={post} />
+                <PostCard key={post.id} post={post} />
               ))}
             </div>
           )}

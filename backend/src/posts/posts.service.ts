@@ -14,7 +14,10 @@ export class PostsService {
 
   async create(createPostDto: CreatePostDto, authorId: number): Promise<Post> {
     const post = this.postsRepository.create({
-      ...createPostDto,
+      title: createPostDto.title,
+      content: createPostDto.content,
+      category: createPostDto.category || 'General',
+      tags: createPostDto.tags || [],
       authorId,
     });
 

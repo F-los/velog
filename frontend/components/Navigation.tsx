@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Menu, X, Languages } from 'lucide-react'
+import { Menu, X, Languages, LogIn, LogOut, PenTool } from 'lucide-react'
 import { useTranslation } from '@/hooks/useTranslation'
+import { useAuth } from '@/contexts/AuthContext'
+import Link from 'next/link'
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const { language, setLanguage, t } = useTranslation()
+  const { user, logout, isLoading } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -78,6 +81,46 @@ const Navigation = () => {
                 {item.name}
               </motion.button>
             ))}
+
+            {/* Auth Buttons */}
+            {!isLoading && (
+              <div className="flex items-center space-x-3">
+                {user ? (
+                  <>
+                    <Link href="/blog/write">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center space-x-2 px-3 py-1 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300"
+                      >
+                        <PenTool size={16} />
+                        <span className="text-sm font-medium">글쓰기</span>
+                      </motion.button>
+                    </Link>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={logout}
+                      className="flex items-center space-x-2 px-3 py-1 rounded-full border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-all duration-300"
+                    >
+                      <LogOut size={16} />
+                      <span className="text-sm font-medium">로그아웃</span>
+                    </motion.button>
+                  </>
+                ) : (
+                  <Link href="/login">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="flex items-center space-x-2 px-3 py-1 rounded-full border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition-all duration-300"
+                    >
+                      <LogIn size={16} />
+                      <span className="text-sm font-medium">로그인</span>
+                    </motion.button>
+                  </Link>
+                )}
+              </div>
+            )}
 
             {/* Language Toggle Button */}
             <motion.button

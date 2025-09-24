@@ -12,6 +12,12 @@ export class Post {
   @Column('text')
   content: string;
 
+  @Column({ nullable: true })
+  category: string;
+
+  @Column('simple-array', { nullable: true })
+  tags: string[];
+
   @ManyToOne(() => User, user => user.posts)
   @JoinColumn({ name: 'authorId' })
   author: User;

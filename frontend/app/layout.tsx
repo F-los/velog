@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 export const metadata: Metadata = {
   title: 'Taewhei Kim - Backend Developer Portfolio',
@@ -27,9 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className="font-sans antialiased bg-white text-gray-900">
-        <div className="min-h-screen">
-          {children}
-        </div>
+        <AuthProvider>
+          <div className="min-h-screen">
+            {children}
+          </div>
+        </AuthProvider>
       </body>
     </html>
   )
