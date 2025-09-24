@@ -8,7 +8,7 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://your-koyeb-backend-url.koyeb.app/:splat"
+  to = "https://fast-cow-flos-a3aa5bcd.koyeb.app/:splat"
   status = 200
   force = true
 
