@@ -37,10 +37,10 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="text-5xl md:text-7xl font-bold mb-6"
+            className="text-5xl md:text-7xl font-bold mb-6 text-gray-900"
           >
             저는{' '}
-            <span className="bg-purple-gradient bg-clip-text text-transparent animate-gradient">
+            <span className="text-purple-600 font-bold">
               김태회
             </span>
             입니다
@@ -88,7 +88,7 @@ const Hero = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-purple-gradient text-white px-8 py-3 rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300"
             >
               프로젝트 보기
             </motion.button>

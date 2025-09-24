@@ -38,7 +38,7 @@ const About = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            <span className="bg-purple-gradient bg-clip-text text-transparent">About Me</span>
+            <span className="text-purple-600">About Me</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             확장 가능하고 안정적인 백엔드 시스템을 만드는 것을 좋아하는 개발자입니다.
@@ -105,7 +105,7 @@ const About = () => {
                 whileHover={{ scale: 1.02 }}
                 className="flex items-start space-x-4 p-6 bg-white border border-purple-100 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300"
               >
-                <div className="flex-shrink-0 p-3 bg-purple-gradient rounded-lg text-white">
+                <div className="flex-shrink-0 p-3 bg-purple-600 rounded-lg text-white">
                   {highlight.icon}
                 </div>
                 <div>
