@@ -14,6 +14,9 @@ import remarkGfm from 'remark-gfm'
 export default function WriteBlogPage() {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [displayContent, setDisplayContent] = useState('')
+  const [imageMap, setImageMap] = useState<Map<string, string>>(new Map())
+  const [imageCounter, setImageCounter] = useState(0)
   const [category, setCategory] = useState('Frontend')
   const [customCategory, setCustomCategory] = useState('')
   const [showCustomCategory, setShowCustomCategory] = useState(false)
@@ -42,6 +45,40 @@ export default function WriteBlogPage() {
     })
   }
 
+  // 이미지 플레이스홀더를 실제 마크다운으로 변환
+  const convertPlaceholdersToMarkdown = (text: string): string => {
+    return text.replace(/\[image (\d+) \+@@\]/g, (match, num) => {
+      const placeholder = `[image ${num} +@@]`
+      const base64 = imageMap.get(placeholder)
+      return base64 ? `![이미지 ${num}](${base64})` : match
+    })
+  }
+
+  // 마크다운의 이미지를 플레이스홀더로 변환
+  const convertMarkdownToPlaceholders = (text: string): string => {
+    const newImageMap = new Map(imageMap)
+    let counter = imageCounter
+
+    const result = text.replace(/!\[([^\]]*)\]\((data:image\/[^;]+;base64[^)]+)\)/g, (match, alt, src) => {
+      // 기존 이미지 맵에서 해당 base64를 찾기
+      for (const [placeholder, base64] of Array.from(newImageMap.entries())) {
+        if (base64 === src) {
+          return placeholder
+        }
+      }
+
+      // 새로운 이미지인 경우
+      counter++
+      const placeholder = `[image ${counter} +@@]`
+      newImageMap.set(placeholder, src)
+      return placeholder
+    })
+
+    setImageMap(newImageMap)
+    setImageCounter(counter)
+    return result
+  }
+
   // 클립보드 이미지 붙여넣기 처리
   const handlePaste = async (e: React.ClipboardEvent) => {
     const items = Array.from(e.clipboardData.items)
@@ -55,18 +92,26 @@ export default function WriteBlogPage() {
         const imageFile = imageItems[0].getAsFile()
         if (imageFile) {
           const base64 = await convertImageToBase64(imageFile)
-          const imageMarkdown = `![이미지](${base64})\n\n`
+          const newCounter = imageCounter + 1
+          const placeholder = `[image ${newCounter} +@@]`
 
-          // 현재 커서 위치에 이미지 마크다운 삽입
+          // 이미지 맵에 추가
+          const newImageMap = new Map(imageMap)
+          newImageMap.set(placeholder, base64)
+          setImageMap(newImageMap)
+          setImageCounter(newCounter)
+
+          // 현재 커서 위치에 플레이스홀더 삽입
           const textarea = e.target as HTMLTextAreaElement
           const start = textarea.selectionStart
           const end = textarea.selectionEnd
-          const newContent = content.slice(0, start) + imageMarkdown + content.slice(end)
-          setContent(newContent)
+          const newContent = displayContent.slice(0, start) + placeholder + '\n\n' + displayContent.slice(end)
+          setDisplayContent(newContent)
+          setContent(convertPlaceholdersToMarkdown(newContent))
 
-          // 커서를 이미지 마크다운 뒤로 이동
+          // 커서를 플레이스홀더 뒤로 이동
           setTimeout(() => {
-            textarea.selectionStart = textarea.selectionEnd = start + imageMarkdown.length
+            textarea.selectionStart = textarea.selectionEnd = start + placeholder.length + 2
           }, 0)
         }
       } catch (error) {
@@ -86,14 +131,31 @@ export default function WriteBlogPage() {
     setUploadingImage(true)
     try {
       const base64 = await convertImageToBase64(file)
-      const imageMarkdown = `![${file.name}](${base64})\n\n`
-      setContent(prev => prev + imageMarkdown)
+      const newCounter = imageCounter + 1
+      const placeholder = `[image ${newCounter} +@@]`
+
+      // 이미지 맵에 추가
+      const newImageMap = new Map(imageMap)
+      newImageMap.set(placeholder, base64)
+      setImageMap(newImageMap)
+      setImageCounter(newCounter)
+
+      const newDisplayContent = displayContent + placeholder + '\n\n'
+      setDisplayContent(newDisplayContent)
+      setContent(convertPlaceholdersToMarkdown(newDisplayContent))
     } catch (error) {
       console.error('이미지 업로드 중 오류 발생:', error)
       setError('이미지 업로드 중 오류가 발생했습니다.')
     } finally {
       setUploadingImage(false)
     }
+  }
+
+  // 콘텐츠 변경 핸들러
+  const handleContentChange = (newDisplayContent: string) => {
+    setDisplayContent(newDisplayContent)
+    const markdownContent = convertPlaceholdersToMarkdown(newDisplayContent)
+    setContent(markdownContent)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,8 +171,10 @@ export default function WriteBlogPage() {
     }
 
     const tagArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag)
-
     const finalCategory = showCustomCategory ? customCategory : category
+
+    // 최종 마크다운 콘텐츠로 변환
+    const finalContent = convertPlaceholdersToMarkdown(displayContent)
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/posts`, {
@@ -121,7 +185,7 @@ export default function WriteBlogPage() {
         },
         body: JSON.stringify({
           title,
-          content,
+          content: finalContent,
           category: finalCategory,
           tags: tagArray,
         }),
@@ -297,6 +361,13 @@ export default function WriteBlogPage() {
                 </div>
               )}
 
+              {imageMap.size > 0 && !isPreview && (
+                <div className="mb-2 text-sm text-gray-600 flex items-center gap-2">
+                  <Image size={16} />
+                  이미지 {imageMap.size}개 첨부됨 (미리보기에서 확인 가능)
+                </div>
+              )}
+
               {isPreview ? (
                 <div className="min-h-96 p-6 border border-gray-300 rounded-lg bg-white overflow-auto">
                   <div className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-code:text-purple-600 prose-code:bg-purple-50 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg prose-h5:text-base prose-h6:text-sm">
@@ -373,18 +444,24 @@ export default function WriteBlogPage() {
                         td: ({ children }) => <td className="border border-gray-300 px-4 py-2">{children}</td>,
                       }}
                     >
-                      {content || '*내용을 작성하면 여기에 미리보기가 표시됩니다.*'}
+                      {convertPlaceholdersToMarkdown(displayContent) || '*내용을 작성하면 여기에 미리보기가 표시됩니다.*'}
                     </ReactMarkdown>
                   </div>
                 </div>
               ) : (
                 <textarea
                   id="content"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  value={displayContent}
+                  onChange={(e) => handleContentChange(e.target.value)}
                   onPaste={handlePaste}
                   rows={20}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none font-mono text-sm"
+                  style={{
+                    background: `linear-gradient(transparent, transparent)`,
+                    // Make image placeholders stand out
+                    backgroundImage: displayContent.includes('[image ') ?
+                      `repeating-linear-gradient(transparent, transparent)` : 'none'
+                  }}
                   placeholder="포스트 내용을 작성하세요...
 
 마크다운 문법 예시:
@@ -397,6 +474,7 @@ export default function WriteBlogPage() {
 `인라인 코드`
 
 📎 이미지 붙여넣기: Ctrl+V (또는 Cmd+V)로 클립보드의 이미지를 바로 삽입할 수 있습니다!
+💡 이미지는 [image 1 +@@] 형태로 표시되며, 미리보기에서 실제 이미지를 확인할 수 있습니다.
 
 ```javascript
 // 코드 블록
