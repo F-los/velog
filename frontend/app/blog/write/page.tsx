@@ -48,7 +48,7 @@ export default function WriteBlogPage() {
     const finalCategory = showCustomCategory ? customCategory : category
 
     try {
-      const response = await fetch('https://fast-cow-flos-a3aa5bcd.koyeb.app/posts', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -36,7 +36,7 @@ export default function BlogPage() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('https://fast-cow-flos-a3aa5bcd.koyeb.app/posts');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/posts`);
         if (response.ok) {
           const fetchedPosts = await response.json();
           setPosts(fetchedPosts);
