@@ -216,9 +216,8 @@ export default function WriteBlogPage() {
               </label>
 
               {isPreview ? (
-                <div className="min-h-96 p-6 border border-gray-300 rounded-lg bg-white overflow-auto">
+                <div className="min-h-96 p-6 border border-gray-300 rounded-lg bg-white overflow-auto prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-code:text-purple-600 prose-code:bg-purple-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-white">
                   <ReactMarkdown
-                    className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-code:text-purple-600 prose-code:bg-purple-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-white"
                     components={{
                       code({ node, inline, className, children, ...props }: any) {
                         const match = /language-(\w+)/.exec(className || '')
@@ -272,9 +271,8 @@ console.log('Hello World!');
                   {/* Live Preview Panel */}
                   <div className="hidden lg:block">
                     <div className="text-sm font-medium text-gray-500 mb-2">실시간 미리보기</div>
-                    <div className="min-h-96 p-4 border border-gray-200 rounded-lg bg-gray-50 overflow-auto">
+                    <div className="min-h-96 p-4 border border-gray-200 rounded-lg bg-gray-50 overflow-auto prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-code:text-purple-600 prose-code:bg-white prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-800 prose-pre:text-white">
                       <ReactMarkdown
-                        className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-code:text-purple-600 prose-code:bg-white prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-800 prose-pre:text-white"
                         components={{
                           code({ node, inline, className, children, ...props }: any) {
                             const match = /language-(\w+)/.exec(className || '')
