@@ -216,44 +216,61 @@ export default function WriteBlogPage() {
               </label>
 
               {isPreview ? (
-                <div className="min-h-96 p-6 border border-gray-300 rounded-lg bg-white overflow-auto prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-code:text-purple-600 prose-code:bg-purple-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-white">
-                  <ReactMarkdown
-                    components={{
-                      code({ node, inline, className, children, ...props }: any) {
-                        const match = /language-(\w+)/.exec(className || '')
-                        return !inline && match ? (
-                          <SyntaxHighlighter
-                            style={tomorrow}
-                            language={match[1]}
-                            PreTag="div"
-                            {...props}
-                          >
-                            {String(children).replace(/\n$/, '')}
-                          </SyntaxHighlighter>
-                        ) : (
-                          <code className={className} {...props}>
-                            {children}
-                          </code>
-                        )
-                      },
-                    }}
-                  >
-                    {content || '*내용을 작성하면 여기에 미리보기가 표시됩니다.*'}
-                  </ReactMarkdown>
+                <div className="min-h-96 p-6 border border-gray-300 rounded-lg bg-white overflow-auto">
+                  <div className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-code:text-purple-600 prose-code:bg-purple-50 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg prose-h5:text-base prose-h6:text-sm">
+                    <ReactMarkdown
+                      components={{
+                        h1: ({ children }) => <h1 className="text-3xl font-bold mb-4 text-gray-900">{children}</h1>,
+                        h2: ({ children }) => <h2 className="text-2xl font-bold mb-3 text-gray-800">{children}</h2>,
+                        h3: ({ children }) => <h3 className="text-xl font-bold mb-2 text-gray-800">{children}</h3>,
+                        h4: ({ children }) => <h4 className="text-lg font-bold mb-2 text-gray-700">{children}</h4>,
+                        h5: ({ children }) => <h5 className="text-base font-bold mb-1 text-gray-700">{children}</h5>,
+                        h6: ({ children }) => <h6 className="text-sm font-bold mb-1 text-gray-600">{children}</h6>,
+                        p: ({ children }) => <p className="mb-4 text-gray-700 leading-relaxed">{children}</p>,
+                        code({ node, inline, className, children, ...props }: any) {
+                          const match = /language-(\w+)/.exec(className || '')
+                          return !inline && match ? (
+                            <SyntaxHighlighter
+                              style={tomorrow}
+                              language={match[1]}
+                              PreTag="div"
+                              className="my-4"
+                              {...props}
+                            >
+                              {String(children).replace(/\n$/, '')}
+                            </SyntaxHighlighter>
+                          ) : (
+                            <code className="bg-purple-50 text-purple-600 px-1 py-0.5 rounded text-sm" {...props}>
+                              {children}
+                            </code>
+                          )
+                        },
+                        ul: ({ children }) => <ul className="list-disc list-inside mb-4 space-y-2">{children}</ul>,
+                        ol: ({ children }) => <ol className="list-decimal list-inside mb-4 space-y-2">{children}</ol>,
+                        li: ({ children }) => <li className="text-gray-700">{children}</li>,
+                        blockquote: ({ children }) => <blockquote className="border-l-4 border-purple-500 pl-4 italic text-gray-600 my-4">{children}</blockquote>,
+                        strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
+                        em: ({ children }) => <em className="italic text-gray-700">{children}</em>,
+                      }}
+                    >
+                      {content || '*내용을 작성하면 여기에 미리보기가 표시됩니다.*'}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <textarea
-                    id="content"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    rows={20}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none font-mono text-sm"
-                    placeholder="포스트 내용을 작성하세요...
+                <textarea
+                  id="content"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  rows={20}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none font-mono text-sm"
+                  placeholder="포스트 내용을 작성하세요...
 
 마크다운 문법 예시:
 # 제목 1
 ## 제목 2
+### 제목 3
+
 **굵은 글씨**
 *기울임 글씨*
 `인라인 코드`
@@ -263,42 +280,15 @@ export default function WriteBlogPage() {
 console.log('Hello World!');
 ```
 
-- 리스트 아이템
-- 리스트 아이템"
-                    required
-                  />
+- 리스트 아이템 1
+- 리스트 아이템 2
 
-                  {/* Live Preview Panel */}
-                  <div className="hidden lg:block">
-                    <div className="text-sm font-medium text-gray-500 mb-2">실시간 미리보기</div>
-                    <div className="min-h-96 p-4 border border-gray-200 rounded-lg bg-gray-50 overflow-auto prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-code:text-purple-600 prose-code:bg-white prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-800 prose-pre:text-white">
-                      <ReactMarkdown
-                        components={{
-                          code({ node, inline, className, children, ...props }: any) {
-                            const match = /language-(\w+)/.exec(className || '')
-                            return !inline && match ? (
-                              <SyntaxHighlighter
-                                style={tomorrow}
-                                language={match[1]}
-                                PreTag="div"
-                                customStyle={{ fontSize: '12px' }}
-                                {...props}
-                              >
-                                {String(children).replace(/\n$/, '')}
-                              </SyntaxHighlighter>
-                            ) : (
-                              <code className={className} {...props}>
-                                {children}
-                              </code>
-                            )
-                          },
-                        }}
-                      >
-                        {content || '*내용을 작성하면 여기에 실시간 미리보기가 표시됩니다.*'}
-                      </ReactMarkdown>
-                    </div>
-                  </div>
-                </div>
+> 인용문 블록
+
+1. 번호 리스트 1
+2. 번호 리스트 2"
+                  required
+                />
               )}
             </div>
 
