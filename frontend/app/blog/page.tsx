@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Tag, Search, Filter } from 'lucide-react';
+import { Calendar, Clock, Tag, Search, Filter, PenTool } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import Navigation from '@/components/Navigation';
+import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Post {
   id: number;
@@ -29,10 +31,12 @@ export default function BlogPage() {
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const { user } = useAuth();
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('http://localhost:8000/posts');
+        const response = await fetch('https://fast-cow-flos-a3aa5bcd.koyeb.app/posts');
         if (response.ok) {
           const fetchedPosts = await response.json();
           setPosts(fetchedPosts);
@@ -156,10 +160,26 @@ export default function BlogPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-xl opacity-90 max-w-2xl mx-auto"
+              className="text-xl opacity-90 max-w-2xl mx-auto mb-8"
             >
               새로운 기술과 개발 경험을 공유하며, 함께 성장해나가는 공간입니다.
             </motion.p>
+
+            {user && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Link
+                  href="/blog/write"
+                  className="inline-flex items-center gap-2 bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-purple-50 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  <PenTool size={20} />
+                  새 글 작성하기
+                </Link>
+              </motion.div>
+            )}
           </div>
         </section>
 

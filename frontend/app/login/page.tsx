@@ -23,7 +23,7 @@ export default function LoginPage() {
 
     const success = await login(username, password)
     if (success) {
-      router.push('/blog/write')
+      router.push('/blog/')
     } else {
       setError('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.')
     }
