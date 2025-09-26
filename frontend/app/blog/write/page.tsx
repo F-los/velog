@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Save, ArrowLeft, Eye, EyeOff, Plus } from 'lucide-react'
+import { Save, ArrowLeft, Eye, EyeOff, Plus, Upload, Image } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import Navigation from '@/components/Navigation'
 import ReactMarkdown from 'react-markdown'
@@ -21,6 +21,7 @@ export default function WriteBlogPage() {
   const [isPreview, setIsPreview] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [uploadingImage, setUploadingImage] = useState(false)
 
   const { user, isLoading: authLoading } = useAuth()
   const router = useRouter()
@@ -30,6 +31,70 @@ export default function WriteBlogPage() {
       router.push('/login')
     }
   }, [user, authLoading, router])
+
+  // 이미지를 Base64로 변환하는 함수
+  const convertImageToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
+
+  // 클립보드 이미지 붙여넣기 처리
+  const handlePaste = async (e: React.ClipboardEvent) => {
+    const items = Array.from(e.clipboardData.items)
+    const imageItems = items.filter(item => item.type.startsWith('image/'))
+
+    if (imageItems.length > 0) {
+      e.preventDefault()
+      setUploadingImage(true)
+
+      try {
+        const imageFile = imageItems[0].getAsFile()
+        if (imageFile) {
+          const base64 = await convertImageToBase64(imageFile)
+          const imageMarkdown = `![이미지](${base64})\n\n`
+
+          // 현재 커서 위치에 이미지 마크다운 삽입
+          const textarea = e.target as HTMLTextAreaElement
+          const start = textarea.selectionStart
+          const end = textarea.selectionEnd
+          const newContent = content.slice(0, start) + imageMarkdown + content.slice(end)
+          setContent(newContent)
+
+          // 커서를 이미지 마크다운 뒤로 이동
+          setTimeout(() => {
+            textarea.selectionStart = textarea.selectionEnd = start + imageMarkdown.length
+          }, 0)
+        }
+      } catch (error) {
+        console.error('이미지 처리 중 오류 발생:', error)
+        setError('이미지 처리 중 오류가 발생했습니다.')
+      } finally {
+        setUploadingImage(false)
+      }
+    }
+  }
+
+  // 파일 선택을 통한 이미지 업로드
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !file.type.startsWith('image/')) return
+
+    setUploadingImage(true)
+    try {
+      const base64 = await convertImageToBase64(file)
+      const imageMarkdown = `![${file.name}](${base64})\n\n`
+      setContent(prev => prev + imageMarkdown)
+    } catch (error) {
+      console.error('이미지 업로드 중 오류 발생:', error)
+      setError('이미지 업로드 중 오류가 발생했습니다.')
+    } finally {
+      setUploadingImage(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -203,9 +268,34 @@ export default function WriteBlogPage() {
 
             {/* Content */}
             <div>
-              <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-                내용 {isPreview && <span className="text-purple-600">(마크다운 미리보기)</span>}
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="content" className="block text-sm font-medium text-gray-700">
+                  내용 {isPreview && <span className="text-purple-600">(마크다운 미리보기)</span>}
+                </label>
+
+                {!isPreview && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">이미지를 복사해서 붙여넣기 하거나</span>
+                    <label className="cursor-pointer flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700">
+                      <Upload size={14} />
+                      파일 선택
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              {uploadingImage && (
+                <div className="mb-2 text-sm text-purple-600 flex items-center gap-2">
+                  <Image size={16} />
+                  이미지 업로드 중...
+                </div>
+              )}
 
               {isPreview ? (
                 <div className="min-h-96 p-6 border border-gray-300 rounded-lg bg-white overflow-auto">
@@ -292,6 +382,7 @@ export default function WriteBlogPage() {
                   id="content"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
+                  onPaste={handlePaste}
                   rows={20}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none font-mono text-sm"
                   placeholder="포스트 내용을 작성하세요...
@@ -304,6 +395,8 @@ export default function WriteBlogPage() {
 **굵은 글씨**
 *기울임 글씨*
 `인라인 코드`
+
+📎 이미지 붙여넣기: Ctrl+V (또는 Cmd+V)로 클립보드의 이미지를 바로 삽입할 수 있습니다!
 
 ```javascript
 // 코드 블록
