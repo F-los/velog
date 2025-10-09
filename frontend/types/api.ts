@@ -60,6 +60,15 @@ export interface CreateUserDto {
   password: string;
 }
 
+/**
+ * User 수정 요청
+ */
+export interface UpdateUserDto {
+  username?: string;
+  email?: string;
+  password?: string;
+}
+
 // ============================================
 // Post Types
 // ============================================

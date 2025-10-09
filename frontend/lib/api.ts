@@ -16,6 +16,7 @@ import type {
   AuthResponse,
   RefreshTokenResponse,
   CreateUserDto,
+  UpdateUserDto,
 } from '@/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -136,6 +137,13 @@ class ApiClient {
 
   async getUser(id: number): Promise<ApiResponse<User>> {
     return this.makeRequest<User>(`/users/${id}`);
+  }
+
+  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<ApiResponse<User>> {
+    return this.makeRequest<User>(`/users/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updateUserDto),
+    });
   }
 
   // ============================================

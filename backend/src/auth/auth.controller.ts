@@ -7,8 +7,8 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
-  ValidationPipe
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { JwtRefreshGuard } from './jwt-refresh.guard';
@@ -22,14 +22,18 @@ export class AuthController {
     private readonly authService: AuthService,
   ) {}
 
+  // ✅ Login: 5 requests per minute (brute force protection)
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
-    @Body(ValidationPipe) loginDto: LoginDto
+    @Body() loginDto: LoginDto
   ): Promise<ApiResponseDto<LoginResponseDto>> {
     return await this.authService.login(loginDto);
   }
 
+  // ✅ Refresh: 10 requests per minute
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @UseGuards(JwtRefreshGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)

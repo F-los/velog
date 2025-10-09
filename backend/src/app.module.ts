@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -12,6 +14,11 @@ import { AuthModule } from './auth/auth.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    // ✅ Rate Limiting 설정
+    ThrottlerModule.forRoot([{
+      ttl: 60000, // 60초
+      limit: 10,  // 60초당 10개 요청
+    }]),
     ...(process.env.DISABLE_DB !== 'true' ? [
       TypeOrmModule.forRoot({
         type: 'postgres',
@@ -30,6 +37,13 @@ import { AuthModule } from './auth/auth.module';
     ...(process.env.DISABLE_DB !== 'true' ? [UsersModule, PostsModule, AuthModule] : []),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // ✅ Global Rate Limiting Guard
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
