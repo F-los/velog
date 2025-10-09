@@ -15,12 +15,23 @@ import { JwtRefreshStrategy } from './jwt-refresh.strategy';
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') || 'your-super-secret-jwt-key-here-please-change-in-production',
-        signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '24h'
-        },
-      }),
+      useFactory: async (configService: ConfigService) => {
+        // ✅ 수정: JWT Secret 필수 검증 (fallback 제거)
+        const secret = configService.get<string>('JWT_SECRET');
+        if (!secret) {
+          throw new Error(
+            'JWT_SECRET is not defined in environment variables. ' +
+            'Please set JWT_SECRET in your .env file for security.'
+          );
+        }
+
+        return {
+          secret,
+          signOptions: {
+            expiresIn: configService.get<string>('JWT_EXPIRES_IN') || '24h'
+          },
+        };
+      },
       inject: [ConfigService],
     }),
   ],

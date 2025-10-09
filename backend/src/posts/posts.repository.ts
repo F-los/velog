@@ -68,14 +68,18 @@ export class PostsRepository {
   }
 
   private createQueryBuilder(queryDto: PostQueryDto): SelectQueryBuilder<Post> {
-    const { page = 1, limit = 10, category, search, sortBy = 'createdAt', sortOrder = 'DESC', tags } = queryDto;
+    const { page = 1, limit = 10, category, search, sortBy = 'createdAt', sortOrder = 'DESC', tags, author } = queryDto;
+
+    // ✅ 수정: SQL Injection 방지 - sortBy whitelist 검증
+    const allowedSortFields = ['createdAt', 'title'];
+    const safeSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
 
     let queryBuilder = this.postRepository
       .createQueryBuilder('post')
       .leftJoinAndSelect('post.author', 'author')
       .skip((page - 1) * limit)
       .take(limit)
-      .orderBy(`post.${sortBy}`, sortOrder);
+      .orderBy(`post.${safeSortBy}`, sortOrder);
 
     if (category) {
       queryBuilder = queryBuilder.andWhere('post.category = :category', { category });
@@ -90,6 +94,11 @@ export class PostsRepository {
 
     if (tags && tags.length > 0) {
       queryBuilder = queryBuilder.andWhere('post.tags && :tags', { tags });
+    }
+
+    // ✅ 추가: author 필터 지원 (기존 /posts/author/:authorId를 query param으로 대체)
+    if (author) {
+      queryBuilder = queryBuilder.andWhere('author.id = :author', { author });
     }
 
     return queryBuilder;

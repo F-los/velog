@@ -1,33 +1,24 @@
+/**
+ * API Client
+ * Single Responsibility: HTTP 통신만 담당
+ */
+
+import type {
+  ApiResponse,
+  PaginatedResponse,
+  User,
+  Post,
+  PostSummary,
+  CreatePostDto,
+  UpdatePostDto,
+  PostQueryParams,
+  LoginDto,
+  AuthResponse,
+  RefreshTokenResponse,
+  CreateUserDto,
+} from '@/types/api';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
-export interface ApiResponse<T = any> {
-  data?: T;
-  message?: string;
-  error?: string;
-}
-
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-}
-
-export interface AuthResponse {
-  access_token: string;
-  refresh_token: string;
-  user: User;
-}
-
-export interface Post {
-  id: number;
-  title: string;
-  content: string;
-  excerpt: string;
-  authorId: number;
-  createdAt: string;
-  updatedAt: string;
-  author?: User;
-}
 
 class ApiClient {
   private baseURL: string;
@@ -62,24 +53,36 @@ class ApiClient {
         headers,
       });
 
-      const data = await response.json();
+      const responseData = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'API request failed');
+        return {
+          success: false,
+          error: responseData.message || responseData.error || 'API request failed',
+          message: responseData.message,
+        };
       }
 
-      return { data };
+      // Backend ApiResponseDto 형식을 그대로 반환
+      // { success: true, data: T, message?: string }
+      return responseData;
     } catch (error) {
       console.error('API request failed:', error);
-      return { error: error instanceof Error ? error.message : 'Unknown error' };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
     }
   }
 
-  // Auth methods
-  async login(username: string, password: string): Promise<ApiResponse<AuthResponse>> {
+  // ============================================
+  // Auth Methods
+  // ============================================
+
+  async login(loginDto: LoginDto): Promise<ApiResponse<AuthResponse>> {
     const response = await this.makeRequest<AuthResponse>('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify(loginDto),
     });
 
     if (response.data) {
@@ -89,10 +92,10 @@ class ApiClient {
     return response;
   }
 
-  async register(username: string, email: string, password: string): Promise<ApiResponse<AuthResponse>> {
-    const response = await this.makeRequest<AuthResponse>('/auth/register', {
+  async register(createUserDto: CreateUserDto): Promise<ApiResponse<AuthResponse>> {
+    const response = await this.makeRequest<AuthResponse>('/users', {
       method: 'POST',
-      body: JSON.stringify({ username, email, password }),
+      body: JSON.stringify(createUserDto),
     });
 
     if (response.data) {
@@ -102,14 +105,14 @@ class ApiClient {
     return response;
   }
 
-  async refreshToken(): Promise<ApiResponse<{ access_token: string }>> {
+  async refreshToken(): Promise<ApiResponse<RefreshTokenResponse>> {
     const refreshToken = localStorage.getItem('refresh_token');
 
     if (!refreshToken) {
-      return { error: 'No refresh token available' };
+      return { success: false, error: 'No refresh token available' };
     }
 
-    const response = await this.makeRequest<{ access_token: string }>('/auth/refresh', {
+    const response = await this.makeRequest<RefreshTokenResponse>('/auth/refresh', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${refreshToken}`,
@@ -123,35 +126,46 @@ class ApiClient {
     return response;
   }
 
-  // User methods
+  async getProfile(): Promise<ApiResponse<User>> {
+    return this.makeRequest<User>('/auth/profile');
+  }
+
+  // ============================================
+  // User Methods
+  // ============================================
+
   async getUser(id: number): Promise<ApiResponse<User>> {
     return this.makeRequest<User>(`/users/${id}`);
   }
 
-  // Post methods
-  async getPosts(): Promise<ApiResponse<Post[]>> {
-    return this.makeRequest<Post[]>('/posts');
+  // ============================================
+  // Post Methods
+  // ============================================
+
+  async getPosts(params?: PostQueryParams): Promise<ApiResponse<PostSummary[]>> {
+    const queryString = params ? '?' + new URLSearchParams(params as any).toString() : '';
+    return this.makeRequest<PostSummary[]>(`/posts${queryString}`);
   }
 
   async getPost(id: number): Promise<ApiResponse<Post>> {
     return this.makeRequest<Post>(`/posts/${id}`);
   }
 
-  async getPostsByAuthor(authorId: number): Promise<ApiResponse<Post[]>> {
-    return this.makeRequest<Post[]>(`/posts/author/${authorId}`);
+  async getPostsByAuthor(authorId: number): Promise<ApiResponse<PostSummary[]>> {
+    return this.makeRequest<PostSummary[]>(`/posts?author=${authorId}`);
   }
 
-  async createPost(title: string, content: string, excerpt: string): Promise<ApiResponse<Post>> {
+  async createPost(createPostDto: CreatePostDto): Promise<ApiResponse<Post>> {
     return this.makeRequest<Post>('/posts', {
       method: 'POST',
-      body: JSON.stringify({ title, content, excerpt }),
+      body: JSON.stringify(createPostDto),
     });
   }
 
-  async updatePost(id: number, title: string, content: string, excerpt: string): Promise<ApiResponse<Post>> {
+  async updatePost(id: number, updatePostDto: UpdatePostDto): Promise<ApiResponse<Post>> {
     return this.makeRequest<Post>(`/posts/${id}`, {
       method: 'PATCH',
-      body: JSON.stringify({ title, content, excerpt }),
+      body: JSON.stringify(updatePostDto),
     });
   }
 
@@ -159,6 +173,10 @@ class ApiClient {
     return this.makeRequest<void>(`/posts/${id}`, {
       method: 'DELETE',
     });
+  }
+
+  async getCategories(): Promise<ApiResponse<string[]>> {
+    return this.makeRequest<string[]>('/posts/categories');
   }
 
   // Token management

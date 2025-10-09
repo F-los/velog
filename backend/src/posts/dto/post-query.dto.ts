@@ -34,4 +34,10 @@ export class PostQueryDto {
   @IsOptional()
   @Transform(({ value }) => value?.split(',').filter(Boolean))
   tags?: string[];
+
+  // ✅ 추가: author query param 지원 (기존 /posts/author/:authorId 대체)
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  author?: number;
 }
