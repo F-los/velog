@@ -17,27 +17,34 @@ export class UsersRepository {
   }
 
   async findById(id: number): Promise<User | undefined> {
-    return await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { id } });
+    return user ?? undefined;
   }
 
   async findByUsername(username: string): Promise<User | undefined> {
-    return await this.userRepository.findOne({ where: { username } });
+    const user = await this.userRepository.findOne({ where: { username } });
+    return user ?? undefined;
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
-    return await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({ where: { email } });
+    return user ?? undefined;
   }
 
-  async findByUsernameOrEmail(username: string, email: string): Promise<User | undefined> {
-    return await this.userRepository.findOne({
-      where: [
-        { username },
-        { email }
-      ]
+  async findByUsernameOrEmail(
+    username: string,
+    email: string,
+  ): Promise<User | undefined> {
+    const user = await this.userRepository.findOne({
+      where: [{ username }, { email }],
     });
+    return user ?? undefined;
   }
 
-  async update(id: number, updateData: Partial<User>): Promise<User | undefined> {
+  async update(
+    id: number,
+    updateData: Partial<User>,
+  ): Promise<User | undefined> {
     await this.userRepository.update(id, updateData);
     return await this.findById(id);
   }

@@ -1,5 +1,6 @@
-import { IsOptional, IsString, IsNumber, Min, Max, Transform } from 'class-validator';
+import { IsOptional, IsString, IsNumber, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 
 export class PostQueryDto {
   @IsOptional()

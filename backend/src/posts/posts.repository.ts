@@ -21,7 +21,9 @@ export class PostsRepository {
     return await this.postRepository.save(post);
   }
 
-  async findAll(queryDto: PostQueryDto): Promise<{ posts: Post[]; total: number }> {
+  async findAll(
+    queryDto: PostQueryDto,
+  ): Promise<{ posts: Post[]; total: number }> {
     const queryBuilder = this.createQueryBuilder(queryDto);
 
     const [posts, total] = await queryBuilder.getManyAndCount();
@@ -30,10 +32,8 @@ export class PostsRepository {
   }
 
   async findById(id: number): Promise<Post | undefined> {
-    return await this.postRepository.findOne({
-      where: { id },
-      relations: ['author'],
-    });
+    const post = await this.postRepository.findOne({ where: { id } });
+    return post ?? undefined;
   }
 
   async findByAuthorId(authorId: number): Promise<Post[]> {
@@ -44,7 +44,10 @@ export class PostsRepository {
     });
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto): Promise<Post | undefined> {
+  async update(
+    id: number,
+    updatePostDto: UpdatePostDto,
+  ): Promise<Post | undefined> {
     await this.postRepository.update(id, updatePostDto);
     return await this.findById(id);
   }
@@ -64,15 +67,26 @@ export class PostsRepository {
       .where('post.category IS NOT NULL AND post.category != ""')
       .getRawMany();
 
-    return result.map(row => row.category);
+    return result.map((row) => row.category);
   }
 
   private createQueryBuilder(queryDto: PostQueryDto): SelectQueryBuilder<Post> {
-    const { page = 1, limit = 10, category, search, sortBy = 'createdAt', sortOrder = 'DESC', tags, author } = queryDto;
+    const {
+      page = 1,
+      limit = 10,
+      category,
+      search,
+      sortBy = 'createdAt',
+      sortOrder = 'DESC',
+      tags,
+      author,
+    } = queryDto;
 
     // ✅ 수정: SQL Injection 방지 - sortBy whitelist 검증
     const allowedSortFields = ['createdAt', 'title'];
-    const safeSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
+    const safeSortBy = allowedSortFields.includes(sortBy)
+      ? sortBy
+      : 'createdAt';
 
     let queryBuilder = this.postRepository
       .createQueryBuilder('post')
@@ -82,13 +96,15 @@ export class PostsRepository {
       .orderBy(`post.${safeSortBy}`, sortOrder);
 
     if (category) {
-      queryBuilder = queryBuilder.andWhere('post.category = :category', { category });
+      queryBuilder = queryBuilder.andWhere('post.category = :category', {
+        category,
+      });
     }
 
     if (search) {
       queryBuilder = queryBuilder.andWhere(
         '(post.title ILIKE :search OR post.content ILIKE :search)',
-        { search: `%${search}%` }
+        { search: `%${search}%` },
       );
     }
 
