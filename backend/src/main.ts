@@ -42,7 +42,7 @@ async function bootstrap() {
   const port = process.env.PORT ?? 8000;
   const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1';
 
-  await app.listen(port, host);
+  await app.listen(Number(process.env.PORT) || 8000, '0.0.0.0');
   console.log(`Application is running on: http://${host}:${port}`);
 }
 bootstrap();
