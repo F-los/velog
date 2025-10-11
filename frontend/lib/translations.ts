@@ -16,19 +16,22 @@ export const translations = {
     'hero.description': 'A developer who loves building <strong>scalable and reliable backend systems</strong>',
     'hero.cta.projects': 'View Projects',
     'hero.cta.contact': 'Contact Me',
+    'hero.cta.github': 'GitHub',
+    'hero.cta.resume': 'Resume',
+    'hero.cta.email': 'Email',
     'hero.scroll': 'Scroll down',
 
     // About Section
     'about.title': 'About Me',
     'about.description': 'A developer who loves building scalable and reliable backend systems.',
     'about.greeting': 'Hello! 👋',
-    'about.intro1': 'I am a backend developer specializing in <strong>Java Spring Boot</strong> with a keen interest in designing and implementing <strong>microservice architectures</strong> in cloud environments.',
+    'about.intro1': 'I am a backend developer specializing in <strong>Node.js/NestJS</strong> with a keen interest in designing and implementing <strong>microservice architectures</strong> and <strong>security best practices</strong> in cloud environments.',
     'about.intro2': 'I enjoy learning new technologies and applying them to real-world projects, constantly striving to create <strong>scalable and reliable systems</strong>.',
     'about.intro3': 'Currently, I am particularly interested in <strong>handling high-volume traffic</strong> and <strong>performance optimization</strong>, working on various projects in these areas.',
     'about.years': 'Years Experience',
     'about.projects': 'Completed Projects',
     'about.highlight1.title': 'Backend Expertise',
-    'about.highlight1.desc': 'Backend system development with Java Spring Boot as the main technology',
+    'about.highlight1.desc': 'Backend system development with Node.js/NestJS and security-focused architecture',
     'about.highlight2.title': 'Cloud Architecture',
     'about.highlight2.desc': 'Design and implementation of AWS-based microservice architecture',
     'about.highlight3.title': 'Performance Optimization',
@@ -38,6 +41,13 @@ export const translations = {
     'about.philosophy.title': 'Development Philosophy',
     'about.philosophy.quote': '"Code is written for humans to read, and only incidentally for machines to execute"',
     'about.philosophy.desc': 'I strive to create better software through readable code, test-driven development, and continuous learning.',
+
+    // Projects Section
+    'projects.title': 'Featured Projects',
+    'projects.viewAll': 'View All Projects',
+    'projects.viewDetails': 'View Details',
+    'projects.liveDemo': 'Live Demo',
+    'projects.sourceCode': 'Source Code',
 
     // Footer
     'footer.copyright': '© 2024 Taewhei Kim. Made with ❤️ and Next.js',
@@ -59,19 +69,22 @@ export const translations = {
     'hero.description': '<strong>확장 가능하고 안정적인 백엔드 시스템</strong>을 만드는 것을 좋아하는 개발자입니다',
     'hero.cta.projects': '프로젝트 보기',
     'hero.cta.contact': '연락하기',
+    'hero.cta.github': 'GitHub',
+    'hero.cta.resume': '이력서',
+    'hero.cta.email': '이메일',
     'hero.scroll': '스크롤하세요',
 
     // About Section
     'about.title': 'About Me',
     'about.description': '확장 가능하고 안정적인 백엔드 시스템을 만드는 것을 좋아하는 개발자입니다.',
     'about.greeting': '안녕하세요! 👋',
-    'about.intro1': '저는 <strong>Java Spring Boot</strong>를 주력으로 하여 클라우드 환경에서의 <strong>마이크로서비스 아키텍처</strong> 설계와 구현에 관심이 많은 백엔드 개발자입니다.',
+    'about.intro1': '저는 <strong>Node.js/NestJS</strong>를 주력으로 하여 클라우드 환경에서의 <strong>마이크로서비스 아키텍처</strong> 설계와 <strong>보안</strong>에 관심이 많은 백엔드 개발자입니다.',
     'about.intro2': '새로운 기술을 학습하고 실무에 적용하는 것을 즐기며, <strong>확장 가능하고 안정적인 시스템</strong>을 만들기 위해 끊임없이 노력하고 있습니다.',
     'about.intro3': '현재는 <strong>대용량 트래픽 처리</strong>와 <strong>성능 최적화</strong>에 특히 관심을 가지고 다양한 프로젝트를 진행하고 있습니다.',
     'about.years': '년 경력',
     'about.projects': '완료 프로젝트',
     'about.highlight1.title': '백엔드 전문성',
-    'about.highlight1.desc': 'Java Spring Boot를 주력으로 하는 백엔드 시스템 개발',
+    'about.highlight1.desc': 'Node.js/NestJS와 보안 중심 아키텍처를 통한 백엔드 시스템 개발',
     'about.highlight2.title': '클라우드 아키텍처',
     'about.highlight2.desc': 'AWS 기반 마이크로서비스 아키텍처 설계 및 구현',
     'about.highlight3.title': '성능 최적화',
@@ -81,6 +94,13 @@ export const translations = {
     'about.philosophy.title': '개발 철학',
     'about.philosophy.quote': '"코드는 사람이 읽기 위한 것이며, 기계는 그것을 실행할 뿐이다"',
     'about.philosophy.desc': '가독성 있는 코드, 테스트 주도 개발, 지속적인 학습을 통해 더 나은 소프트웨어를 만들어가고 있습니다.',
+
+    // Projects Section
+    'projects.title': '주요 프로젝트',
+    'projects.viewAll': '모든 프로젝트 보기',
+    'projects.viewDetails': '상세보기',
+    'projects.liveDemo': '라이브 데모',
+    'projects.sourceCode': '소스코드',
 
     // Footer
     'footer.copyright': '© 2024 김태회. Made with ❤️ and Next.js',

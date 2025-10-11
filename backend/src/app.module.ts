@@ -5,9 +5,11 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
 import { AuthModule } from './auth/auth.module';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
@@ -34,7 +36,8 @@ import { AuthModule } from './auth/auth.module';
         ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
       })
     ] : []),
-    ...(process.env.DISABLE_DB !== 'true' ? [UsersModule, PostsModule, AuthModule] : []),
+    PrismaModule,
+    ...(process.env.DISABLE_DB !== 'true' ? [UsersModule, PostsModule, AuthModule, ProjectsModule] : []),
   ],
   controllers: [AppController],
   providers: [

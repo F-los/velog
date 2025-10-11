@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model posts {
+  id        Int      @id(map: "PK_2829ac61eff60fcec60d7274b9e") @default(autoincrement())
+  title     String   @db.VarChar
+  content   String
+  category  String?  @db.VarChar
+  tags      String?
+  authorId  Int
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+  users     users    @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_c5a322ad12a7bf95460c958e80e")
+}
+
+model users {
+  id        Int      @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(autoincrement())
+  username  String   @unique(map: "UQ_fe0bb3f6520ee0469504521e710") @db.VarChar
+  email     String   @unique(map: "UQ_97672ac88f789774dd47f7c8be3") @db.VarChar
+  password  String   @db.VarChar
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @db.Timestamp(6)
+  posts     posts[]
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  title       String
+  summary     String
+  description String?  @db.Text
+  techStack   String[]
+  coverUrl    String?
+  repoUrl     String?
+  liveUrl     String?
+  highlight   Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("projects")
+  @@index([highlight, order])
+}

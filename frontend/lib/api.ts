@@ -187,6 +187,39 @@ class ApiClient {
     return this.makeRequest<string[]>('/posts/categories');
   }
 
+  // ============================================
+  // Project Methods
+  // ============================================
+
+  async getProjects(params?: { highlight?: boolean; limit?: number; page?: number }): Promise<ApiResponse<{ projects: any[]; total: number }>> {
+    const queryString = params ? '?' + new URLSearchParams(params as any).toString() : '';
+    return this.makeRequest<{ projects: any[]; total: number }>(`/projects${queryString}`);
+  }
+
+  async getProject(slug: string): Promise<ApiResponse<any>> {
+    return this.makeRequest<any>(`/projects/${slug}`);
+  }
+
+  async createProject(createProjectDto: any): Promise<ApiResponse<any>> {
+    return this.makeRequest<any>('/projects', {
+      method: 'POST',
+      body: JSON.stringify(createProjectDto),
+    });
+  }
+
+  async updateProject(id: number, updateProjectDto: any): Promise<ApiResponse<any>> {
+    return this.makeRequest<any>(`/projects/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updateProjectDto),
+    });
+  }
+
+  async deleteProject(id: number): Promise<ApiResponse<void>> {
+    return this.makeRequest<void>(`/projects/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Token management
   private setTokens(accessToken: string, refreshToken?: string): void {
     this.accessToken = accessToken;

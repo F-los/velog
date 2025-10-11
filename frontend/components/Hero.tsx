@@ -62,9 +62,9 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="flex justify-center space-x-6 mb-12"
+            className="flex justify-center flex-wrap gap-3 mb-12 max-w-2xl mx-auto"
           >
-            {['Java', 'Spring Boot', 'Python', 'AWS', 'Docker'].map((tech, index) => (
+            {['Node.js', 'NestJS', 'TypeScript', 'PostgreSQL', 'AWS', 'Docker'].map((tech, index) => (
               <motion.div
                 key={tech}
                 initial={{ opacity: 0, scale: 0 }}
@@ -85,22 +85,33 @@ const Hero = () => {
             transition={{ delay: 1.2 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <motion.button
+            <motion.a
+              href="https://github.com/F-los"
+              target="_blank"
+              rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 inline-block"
             >
-{t('hero.cta.projects')}
-            </motion.button>
-            <motion.button
+              {t('hero.cta.github')}
+            </motion.a>
+            <motion.a
+              href="/resume.pdf"
+              download
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-              className="border-2 border-purple-600 text-purple-600 px-8 py-3 rounded-full font-medium hover:bg-purple-600 hover:text-white transition-all duration-300"
+              className="border-2 border-purple-600 text-purple-600 px-8 py-3 rounded-full font-medium hover:bg-purple-600 hover:text-white transition-all duration-300 inline-block"
             >
-{t('hero.cta.contact')}
-            </motion.button>
+              {t('hero.cta.resume')}
+            </motion.a>
+            <motion.a
+              href="mailto:xoghl1124@gmail.com"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="border-2 border-purple-600 text-purple-600 px-8 py-3 rounded-full font-medium hover:bg-purple-600 hover:text-white transition-all duration-300 inline-block"
+            >
+              {t('hero.cta.email')}
+            </motion.a>
           </motion.div>
         </motion.div>
       </div>
