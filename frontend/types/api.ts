@@ -163,3 +163,76 @@ export interface AuthResponse {
 export interface RefreshTokenResponse {
   access_token: string;
 }
+
+// ============================================
+// Project Types
+// ============================================
+
+/**
+ * Project 엔티티
+ * Backend ProjectResponseDto와 일치
+ */
+export interface Project {
+  id: number;
+  slug: string;
+  title: string;
+  summary: string;
+  description?: string;
+  techStack: string[];
+  coverUrl?: string;
+  repoUrl?: string;
+  liveUrl?: string;
+  highlight: boolean;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Project 생성 요청
+ */
+export interface CreateProjectDto {
+  slug: string;
+  title: string;
+  summary: string;
+  description?: string;
+  techStack: string[];
+  coverUrl?: string;
+  repoUrl?: string;
+  liveUrl?: string;
+  highlight?: boolean;
+  order?: number;
+}
+
+/**
+ * Project 수정 요청
+ */
+export interface UpdateProjectDto {
+  slug?: string;
+  title?: string;
+  summary?: string;
+  description?: string;
+  techStack?: string[];
+  coverUrl?: string;
+  repoUrl?: string;
+  liveUrl?: string;
+  highlight?: boolean;
+  order?: number;
+}
+
+/**
+ * Project 조회 쿼리 파라미터
+ */
+export interface ProjectQueryParams {
+  highlight?: boolean;
+  limit?: number;
+  page?: number;
+}
+
+/**
+ * Projects 응답 (목록)
+ */
+export interface ProjectsResponse {
+  projects: Project[];
+  total: number;
+}

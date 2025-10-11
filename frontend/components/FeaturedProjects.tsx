@@ -4,18 +4,7 @@ import { motion } from 'framer-motion'
 import { useTranslation } from '@/hooks/useTranslation'
 import ProjectCard from './ProjectCard'
 import Link from 'next/link'
-
-interface Project {
-  id: number
-  slug: string
-  title: string
-  summary: string
-  techStack: string[]
-  coverUrl?: string
-  repoUrl?: string
-  liveUrl?: string
-  highlight: boolean
-}
+import type { Project } from '@/types/api'
 
 interface FeaturedProjectsProps {
   projects: Project[]

@@ -8,10 +8,11 @@ import About from '@/components/About'
 import FeaturedProjects from '@/components/FeaturedProjects'
 import { useTranslation } from '@/hooks/useTranslation'
 import { apiClient } from '@/lib/api'
+import type { Project } from '@/types/api'
 
 export default function Home() {
   const { t } = useTranslation()
-  const [projects, setProjects] = useState([])
+  const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

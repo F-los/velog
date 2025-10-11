@@ -17,6 +17,11 @@ import type {
   RefreshTokenResponse,
   CreateUserDto,
   UpdateUserDto,
+  Project,
+  CreateProjectDto,
+  UpdateProjectDto,
+  ProjectQueryParams,
+  ProjectsResponse,
 } from '@/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -191,24 +196,24 @@ class ApiClient {
   // Project Methods
   // ============================================
 
-  async getProjects(params?: { highlight?: boolean; limit?: number; page?: number }): Promise<ApiResponse<{ projects: any[]; total: number }>> {
+  async getProjects(params?: ProjectQueryParams): Promise<ApiResponse<ProjectsResponse>> {
     const queryString = params ? '?' + new URLSearchParams(params as any).toString() : '';
-    return this.makeRequest<{ projects: any[]; total: number }>(`/projects${queryString}`);
+    return this.makeRequest<ProjectsResponse>(`/projects${queryString}`);
   }
 
-  async getProject(slug: string): Promise<ApiResponse<any>> {
-    return this.makeRequest<any>(`/projects/${slug}`);
+  async getProject(slug: string): Promise<ApiResponse<Project>> {
+    return this.makeRequest<Project>(`/projects/${slug}`);
   }
 
-  async createProject(createProjectDto: any): Promise<ApiResponse<any>> {
-    return this.makeRequest<any>('/projects', {
+  async createProject(createProjectDto: CreateProjectDto): Promise<ApiResponse<Project>> {
+    return this.makeRequest<Project>('/projects', {
       method: 'POST',
       body: JSON.stringify(createProjectDto),
     });
   }
 
-  async updateProject(id: number, updateProjectDto: any): Promise<ApiResponse<any>> {
-    return this.makeRequest<any>(`/projects/${id}`, {
+  async updateProject(id: number, updateProjectDto: UpdateProjectDto): Promise<ApiResponse<Project>> {
+    return this.makeRequest<Project>(`/projects/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(updateProjectDto),
     });
