@@ -11,13 +11,18 @@ Render.com 대시보드에서 다음 환경 변수들을 설정해야 합니다:
 ```
 NODE_ENV=production
 PORT=8000
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+JWT_SECRET=<your-jwt-secret>
+FRONTEND_URL=<your-frontend-url>
+```
+
+또는 개별 데이터베이스 설정:
+```
 DATABASE_HOST=<your-database-host>
 DATABASE_PORT=5432
 DATABASE_USERNAME=<your-db-username>
 DATABASE_PASSWORD=<your-db-password>
 DATABASE_NAME=<your-db-name>
-JWT_SECRET=<your-jwt-secret>
-FRONTEND_URL=<your-frontend-url>
 ```
 
 ## Render.com 배포 방법
@@ -76,15 +81,39 @@ services:
 ### Render.com PostgreSQL 생성
 
 1. Render Dashboard → "New +" → "PostgreSQL"
-2. 데이터베이스 이름 입력
-3. 생성 후 "Internal Database URL" 복사
-4. Web Service의 환경 변수에 데이터베이스 정보 추가
+2. 데이터베이스 이름 입력 (예: velog-db)
+3. Region 선택 (Web Service와 동일한 지역 권장)
+4. 생성 후 "Internal Database URL" 복사
+5. Web Service의 환경 변수에 `DATABASE_URL`로 추가
 
-또는 환경 변수에서 직접 연결:
+예시:
+```
+DATABASE_URL=postgresql://velog_user:xxxxx@dpg-xxxxx-a.oregon-postgres.render.com/velog_db
+```
 
+### Prisma 마이그레이션 실행
+
+데이터베이스 생성 후 스키마 마이그레이션이 필요합니다:
+
+**옵션 1: Render Shell에서 실행**
+1. Render Dashboard → 배포된 Web Service 선택
+2. "Shell" 탭 클릭
+3. 다음 명령 실행:
+```bash
+npx prisma migrate deploy
 ```
-DATABASE_URL=postgresql://user:password@host:5432/dbname
+
+**옵션 2: 로컬에서 실행**
+```bash
+# DATABASE_URL 환경 변수 설정
+export DATABASE_URL="postgresql://user:password@host:5432/dbname"
+
+# 마이그레이션 실행
+npx prisma migrate deploy
 ```
+
+**옵션 3: Dockerfile에 추가 (권장하지 않음)**
+마이그레이션은 배포 시가 아닌 별도로 관리하는 것을 권장합니다.
 
 ## Health Check
 
