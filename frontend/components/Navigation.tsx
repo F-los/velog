@@ -65,7 +65,7 @@ const Navigation = () => {
             className="font-bold text-xl text-purple-600 cursor-pointer"
             onClick={() => scrollToSection('#home')}
           >
-            {t('hero.name')}
+            velog
           </motion.div>
 
           {/* Desktop Menu */}
