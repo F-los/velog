@@ -100,8 +100,8 @@ export default function BlogSidebar({
         initial={{ x: -300 }}
         animate={{ x: isOpen ? 0 : -300 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className={`fixed lg:sticky top-0 left-0 h-screen lg:h-auto w-80 bg-white border-r border-gray-200 z-50 lg:z-auto overflow-y-auto ${
-          isOpen ? 'shadow-xl lg:shadow-none' : ''
+        className={`fixed lg:sticky top-0 left-0 h-screen lg:h-auto w-80 bg-gradient-to-br from-white to-purple-50/30 border-r border-purple-100 z-50 lg:z-auto overflow-y-auto ${
+          isOpen ? 'shadow-2xl lg:shadow-none' : ''
         }`}
         style={{ paddingTop: isOpen ? '80px' : '100px' }} // Account for navigation height
       >
@@ -118,8 +118,8 @@ export default function BlogSidebar({
 
           {/* Search Section */}
           <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Search size={20} />
+            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Search size={20} className="text-purple-600" />
               검색
             </h3>
             <div className="relative">
@@ -128,14 +128,14 @@ export default function BlogSidebar({
                 placeholder="포스트 검색..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent pr-10"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all pr-10 bg-white"
               />
               {searchQuery && (
                 <button
                   onClick={handleClearSearch}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-600 transition-colors"
                 >
-                  <X size={16} />
+                  <X size={18} />
                 </button>
               )}
             </div>
@@ -143,19 +143,27 @@ export default function BlogSidebar({
 
           {/* Stats Section */}
           <div className="mb-8">
-            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-4">
-              <h4 className="font-medium text-gray-900 mb-2">📊 통계</h4>
-              <div className="text-sm text-gray-600">
-                <p>전체 포스트: <span className="font-semibold text-purple-600">{totalPosts}개</span></p>
-                <p>카테고리: <span className="font-semibold text-purple-600">{categories.length}개</span></p>
+            <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-xl p-5 border border-purple-200">
+              <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <span className="text-xl">📊</span> 통계
+              </h4>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-700">전체 포스트</span>
+                  <span className="font-bold text-purple-700 text-lg">{totalPosts}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-700">카테고리</span>
+                  <span className="font-bold text-purple-700 text-lg">{categories.length}</span>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Categories Section */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Folder size={20} />
+            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Folder size={20} className="text-purple-600" />
               카테고리
             </h3>
 
@@ -172,17 +180,21 @@ export default function BlogSidebar({
                 {/* All Categories */}
                 <button
                   onClick={() => onCategoryChange('all')}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all transform hover:scale-[1.02] ${
                     selectedCategory === 'all'
-                      ? 'bg-purple-100 text-purple-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold shadow-md'
+                      : 'text-gray-700 hover:bg-purple-50 border border-gray-200'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <Hash size={16} />
                     <span>전체</span>
                   </div>
-                  <span className="text-sm bg-gray-200 text-gray-600 px-2 py-1 rounded-full">
+                  <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                    selectedCategory === 'all'
+                      ? 'bg-white/20 text-white'
+                      : 'bg-gray-200 text-gray-600'
+                  }`}>
                     {totalPosts}
                   </span>
                 </button>
@@ -192,17 +204,21 @@ export default function BlogSidebar({
                   <button
                     key={category.name}
                     onClick={() => onCategoryChange(category.name)}
-                    className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${
+                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all transform hover:scale-[1.02] ${
                       selectedCategory === category.name
-                        ? 'bg-purple-100 text-purple-700 font-medium'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold shadow-md'
+                        : 'text-gray-700 hover:bg-purple-50 border border-gray-200'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <Folder size={16} />
-                      <span>{category.name}</span>
+                      <span className="truncate">{category.name}</span>
                     </div>
-                    <span className="text-sm bg-gray-200 text-gray-600 px-2 py-1 rounded-full">
+                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium flex-shrink-0 ${
+                      selectedCategory === category.name
+                        ? 'bg-white/20 text-white'
+                        : 'bg-gray-200 text-gray-600'
+                    }`}>
                       {category.count}
                     </span>
                   </button>

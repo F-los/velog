@@ -13,16 +13,13 @@ async function createAdminUser() {
   const adminData = {
     username: 'admin',
     email: 'admin@velog.com',
-    password: 'admin123!'
+    password: 'admin1234',
   };
 
   try {
     // Check if admin user already exists
     const existingAdmin = await userRepository.findOne({
-      where: [
-        { username: adminData.username },
-        { email: adminData.email }
-      ]
+      where: [{ username: adminData.username }, { email: adminData.email }],
     });
 
     if (existingAdmin) {
@@ -47,7 +44,6 @@ async function createAdminUser() {
     console.log('Email:', adminData.email);
     console.log('Password:', adminData.password);
     console.log('User ID:', savedUser.id);
-
   } catch (error) {
     console.error('Error creating admin user:', error);
   } finally {

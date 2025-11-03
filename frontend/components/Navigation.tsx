@@ -60,13 +60,14 @@ const Navigation = () => {
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="font-bold text-xl text-purple-600 cursor-pointer"
-            onClick={() => scrollToSection('#home')}
-          >
-            velog
-          </motion.div>
+          <Link href="/">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="font-bold text-xl text-purple-600 cursor-pointer"
+            >
+              velog
+            </motion.div>
+          </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
