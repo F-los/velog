@@ -8,15 +8,32 @@
 ### 2. 환경 변수 설정
 Render.com 대시보드에서 다음 환경 변수들을 설정해야 합니다:
 
+**필수 환경 변수:**
 ```
 NODE_ENV=production
 PORT=8000
 DATABASE_URL=postgresql://user:password@host:5432/dbname
-JWT_SECRET=<your-jwt-secret>
+JWT_SECRET=<generate-strong-secret-64-chars>
+JWT_REFRESH_SECRET=<generate-different-strong-secret-64-chars>
 FRONTEND_URL=<your-frontend-url>
 ```
 
-또는 개별 데이터베이스 설정:
+**JWT Secret 생성 방법:**
+```bash
+# 터미널에서 실행하여 강력한 시크릿 생성
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
+**FRONTEND_URL 설정 예시:**
+```
+# 로컬 개발
+FRONTEND_URL=http://localhost:3000
+
+# 프로덕션 (Vercel, Netlify 등)
+FRONTEND_URL=https://your-frontend.vercel.app
+```
+
+**또는 개별 데이터베이스 설정:**
 ```
 DATABASE_HOST=<your-database-host>
 DATABASE_PORT=5432

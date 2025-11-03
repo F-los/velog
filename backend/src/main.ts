@@ -23,10 +23,25 @@ async function bootstrap() {
   // 순서: AllExceptions → HttpException (구체적인 것이 나중)
   app.useGlobalFilters(new AllExceptionsFilter(), new HttpExceptionFilter());
 
-  // CORS 설정
+  // CORS 설정 - 여러 프론트엔드 URL 허용
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    process.env.FRONTEND_URL,
+  ].filter(Boolean);
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+      // origin이 없는 경우 (same-origin 요청) 또는 허용된 origin인 경우
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   // 전역 validation pipe 설정

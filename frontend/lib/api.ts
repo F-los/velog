@@ -43,6 +43,11 @@ class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
+    // 🔑 매번 요청 시 localStorage에서 최신 토큰 확인
+    if (typeof window !== 'undefined') {
+      this.accessToken = localStorage.getItem('access_token');
+    }
+
     const url = `${this.baseURL}${endpoint}`;
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -51,6 +56,9 @@ class ApiClient {
 
     if (this.accessToken) {
       headers.Authorization = `Bearer ${this.accessToken}`;
+      console.log(`🔑 Making request to ${endpoint} with token:`, this.accessToken.substring(0, 20) + '...');
+    } else {
+      console.log(`⚠️  Making request to ${endpoint} without token`);
     }
 
     try {
@@ -62,6 +70,7 @@ class ApiClient {
       const responseData = await response.json();
 
       if (!response.ok) {
+        console.error(`❌ API Error (${response.status}):`, responseData);
         return {
           success: false,
           error: responseData.message || responseData.error || 'API request failed',
@@ -71,9 +80,10 @@ class ApiClient {
 
       // Backend ApiResponseDto 형식을 그대로 반환
       // { success: true, data: T, message?: string }
+      console.log(`✅ API Success for ${endpoint}:`, responseData);
       return responseData;
     } catch (error) {
-      console.error('API request failed:', error);
+      console.error('❌ API request failed:', error);
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',

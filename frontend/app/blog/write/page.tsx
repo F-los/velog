@@ -163,7 +163,14 @@ export default function WriteBlogPage() {
     setIsLoading(true)
     setError('')
 
+    console.log('📝 Submit - User:', user)
+    console.log('📝 Submit - Tokens:', {
+      access_token: typeof window !== 'undefined' ? localStorage.getItem('access_token') : null,
+      refresh_token: typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null
+    })
+
     if (!user) {
+      console.error('❌ No user found')
       setError('인증이 필요합니다. 다시 로그인해주세요.')
       setIsLoading(false)
       router.push('/login')
@@ -178,20 +185,24 @@ export default function WriteBlogPage() {
 
     try {
       const { apiClient } = await import('@/lib/api')
+      console.log('📝 Calling createPost...')
       const response = await apiClient.createPost({
         title,
         content: finalContent,
         category: finalCategory,
         tags: tagArray,
       })
+      console.log('📝 createPost response:', response)
 
       if (response.success) {
+        console.log('✅ Post created successfully')
         router.push('/blog')
       } else {
+        console.error('❌ Post creation failed:', response)
         setError(response.error || response.message || '포스트 작성에 실패했습니다.')
       }
     } catch (error) {
-      console.error('Submit error:', error)
+      console.error('❌ Submit error:', error)
       setError('네트워크 오류가 발생했습니다.')
     }
     setIsLoading(false)

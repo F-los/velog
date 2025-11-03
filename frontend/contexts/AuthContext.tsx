@@ -53,16 +53,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
+      console.log('🔐 Attempting login...')
       // ✅ 수정: API Client 사용 (중복 코드 제거)
       const response = await apiClient.login({ username, password })
+      console.log('🔐 Login response:', response)
 
       if (response.success && response.data) {
+        console.log('✅ Login successful, setting user:', response.data.user)
+        console.log('🔑 Tokens in localStorage:', {
+          access_token: localStorage.getItem('access_token'),
+          refresh_token: localStorage.getItem('refresh_token')
+        })
         setUser(response.data.user)
         return true
       }
+      console.error('❌ Login failed:', response.error || response.message)
       return false
     } catch (error) {
-      console.error('Login error:', error)
+      console.error('❌ Login error:', error)
       return false
     }
   }

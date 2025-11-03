@@ -32,7 +32,10 @@ export class PostsRepository {
   }
 
   async findById(id: number): Promise<Post | undefined> {
-    const post = await this.postRepository.findOne({ where: { id } });
+    const post = await this.postRepository.findOne({
+      where: { id },
+      relations: ['author'], // ✅ Load author relation for frontend
+    });
     return post ?? undefined;
   }
 
@@ -61,13 +64,20 @@ export class PostsRepository {
   }
 
   async findCategories(): Promise<string[]> {
-    const result = await this.postRepository
-      .createQueryBuilder('post')
-      .select('DISTINCT post.category', 'category')
-      .where('post.category IS NOT NULL AND post.category != ""')
-      .getRawMany();
+    try {
+      const result = await this.postRepository
+        .createQueryBuilder('post')
+        .select('DISTINCT post.category', 'category')
+        .where('post.category IS NOT NULL')
+        .andWhere('post.category != :empty', { empty: '' })
+        .getRawMany();
 
-    return result.map((row) => row.category);
+      return result.map((row) => row.category).filter(Boolean);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      // Return empty array if no categories found or query fails
+      return [];
+    }
   }
 
   private createQueryBuilder(queryDto: PostQueryDto): SelectQueryBuilder<Post> {
