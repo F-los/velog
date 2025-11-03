@@ -64,18 +64,6 @@ const About = () => {
               <p dangerouslySetInnerHTML={{ __html: t('about.intro2') }} />
               <p dangerouslySetInnerHTML={{ __html: t('about.intro3') }} />
             </div>
-
-            {/* Personal Stats */}
-            <div className="grid grid-cols-2 gap-6 mt-8">
-              <div className="text-center p-4 bg-purple-50 rounded-lg">
-                <div className="text-2xl font-bold text-purple-700">3+</div>
-                <div className="text-sm text-gray-600">{t('about.years')}</div>
-              </div>
-              <div className="text-center p-4 bg-purple-50 rounded-lg">
-                <div className="text-2xl font-bold text-purple-700">15+</div>
-                <div className="text-sm text-gray-600">{t('about.projects')}</div>
-              </div>
-            </div>
           </motion.div>
 
           {/* Right Content - Highlights */}
