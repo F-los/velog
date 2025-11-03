@@ -163,10 +163,10 @@ export default function WriteBlogPage() {
     setIsLoading(true)
     setError('')
 
-    const token = localStorage.getItem('token')
-    if (!token) {
-      setError('인증 토큰이 없습니다. 다시 로그인해주세요.')
+    if (!user) {
+      setError('인증이 필요합니다. 다시 로그인해주세요.')
       setIsLoading(false)
+      router.push('/login')
       return
     }
 
@@ -177,25 +177,18 @@ export default function WriteBlogPage() {
     const finalContent = convertPlaceholdersToMarkdown(displayContent)
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/posts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title,
-          content: finalContent,
-          category: finalCategory,
-          tags: tagArray,
-        }),
+      const { apiClient } = await import('@/lib/api')
+      const response = await apiClient.createPost({
+        title,
+        content: finalContent,
+        category: finalCategory,
+        tags: tagArray,
       })
 
-      if (response.ok) {
+      if (response.success) {
         router.push('/blog')
       } else {
-        const errorData = await response.json()
-        setError(errorData.message || '포스트 작성에 실패했습니다.')
+        setError(response.error || response.message || '포스트 작성에 실패했습니다.')
       }
     } catch (error) {
       console.error('Submit error:', error)

@@ -37,33 +37,29 @@ export default function BlogSidebar({
 
   const fetchCategories = async () => {
     try {
+      const { apiClient } = await import('@/lib/api')
+
       // 카테고리 목록 가져오기
-      const categoriesResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/posts/categories`)
-      if (categoriesResponse.ok) {
-        const categoriesResult = await categoriesResponse.json()
-        if (categoriesResult.success) {
-          // 각 카테고리별 포스트 수 계산
-          const categoriesWithCount = await Promise.all(
-            categoriesResult.data.map(async (categoryName: string) => {
-              try {
-                const postsResponse = await fetch(
-                  `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/posts?category=${encodeURIComponent(categoryName)}&limit=1`
-                )
-                if (postsResponse.ok) {
-                  const postsResult = await postsResponse.json()
-                  return {
-                    name: categoryName,
-                    count: postsResult.pagination?.total || 0
-                  }
-                }
-                return { name: categoryName, count: 0 }
-              } catch {
-                return { name: categoryName, count: 0 }
+      const categoriesResponse = await apiClient.getCategories()
+      if (categoriesResponse.success && categoriesResponse.data) {
+        // 각 카테고리별 포스트 수 계산
+        const categoriesWithCount = await Promise.all(
+          categoriesResponse.data.map(async (categoryName: string) => {
+            try {
+              const postsResponse = await apiClient.getPosts({
+                category: categoryName,
+                limit: '1'
+              })
+              return {
+                name: categoryName,
+                count: (postsResponse.data as any)?.length || 0
               }
-            })
-          )
-          setCategories(categoriesWithCount.filter(cat => cat.count > 0))
-        }
+            } catch {
+              return { name: categoryName, count: 0 }
+            }
+          })
+        )
+        setCategories(categoriesWithCount.filter(cat => cat.count > 0))
       }
     } catch (error) {
       console.error('Failed to fetch categories:', error)
@@ -74,10 +70,10 @@ export default function BlogSidebar({
 
   const fetchTotalPosts = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/posts?limit=1`)
-      if (response.ok) {
-        const result = await response.json()
-        setTotalPosts(result.pagination?.total || 0)
+      const { apiClient } = await import('@/lib/api')
+      const response = await apiClient.getPosts({ limit: '1' })
+      if (response.success && response.data) {
+        setTotalPosts((response.data as any)?.length || 0)
       }
     } catch (error) {
       console.error('Failed to fetch total posts:', error)

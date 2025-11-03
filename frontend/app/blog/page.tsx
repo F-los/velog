@@ -41,26 +41,22 @@ export default function BlogPage() {
 
   const fetchPosts = async () => {
     try {
-      const params = new URLSearchParams();
+      const { apiClient } = await import('@/lib/api');
+      const params: any = {};
+
       if (selectedCategory !== 'all') {
-        params.append('category', selectedCategory);
+        params.category = selectedCategory;
       }
       if (searchQuery) {
-        params.append('search', searchQuery);
+        params.search = searchQuery;
       }
-      params.append('limit', '20');
+      params.limit = '20';
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/posts?${params.toString()}`
-      );
+      const response = await apiClient.getPosts(params);
 
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success || result.data) {
-          const fetchedPosts = result.data || result;
-          setPosts(fetchedPosts);
-          setFilteredPosts(fetchedPosts);
-        }
+      if (response.success && response.data) {
+        setPosts(response.data as any);
+        setFilteredPosts(response.data as any);
       }
     } catch (error) {
       console.error('Failed to fetch posts:', error);
