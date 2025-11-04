@@ -16,14 +16,32 @@ interface MarkdownRendererProps {
 }
 
 export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
+  // Helper function to generate heading IDs
+  const generateHeadingId = (children: any, index: number) => {
+    const text = String(children).toLowerCase().replace(/[^a-z0-9가-힣]+/g, '-')
+    return `heading-${index}-${text}`
+  }
+
+  // Count headings for ID generation
+  let h1Count = 0, h2Count = 0, h3Count = 0
+
   return (
     <div className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-code:text-purple-600 prose-code:bg-purple-50 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-white prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg prose-h5:text-base prose-h6:text-sm">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          h1: ({ children }) => <h1 className="text-3xl font-bold mb-4 text-gray-900">{children}</h1>,
-          h2: ({ children }) => <h2 className="text-2xl font-bold mb-3 text-gray-800">{children}</h2>,
-          h3: ({ children }) => <h3 className="text-xl font-bold mb-2 text-gray-800">{children}</h3>,
+          h1: ({ children }) => {
+            const id = generateHeadingId(children, h1Count++)
+            return <h1 id={id} className="text-3xl font-bold mb-4 mt-8 text-gray-900 scroll-mt-24">{children}</h1>
+          },
+          h2: ({ children }) => {
+            const id = generateHeadingId(children, h2Count++)
+            return <h2 id={id} className="text-2xl font-bold mb-3 mt-6 text-gray-800 scroll-mt-24">{children}</h2>
+          },
+          h3: ({ children }) => {
+            const id = generateHeadingId(children, h3Count++)
+            return <h3 id={id} className="text-xl font-bold mb-2 mt-4 text-gray-800 scroll-mt-24">{children}</h3>
+          },
           h4: ({ children }) => <h4 className="text-lg font-bold mb-2 text-gray-700">{children}</h4>,
           h5: ({ children }) => <h5 className="text-base font-bold mb-1 text-gray-700">{children}</h5>,
           h6: ({ children }) => <h6 className="text-sm font-bold mb-1 text-gray-600">{children}</h6>,

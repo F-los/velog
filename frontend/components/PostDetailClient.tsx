@@ -13,6 +13,7 @@ import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import type { Post } from '@/types/api'
 import MarkdownRenderer from './MarkdownRenderer'
+import TableOfContents from './TableOfContents'
 
 interface PostDetailClientProps {
   post: Post
@@ -23,9 +24,12 @@ export default function PostDetailClient({ post }: PostDetailClientProps) {
 
   return (
     <main className="pt-20 pb-16">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex gap-8">
+          {/* Main Content */}
+          <div className="flex-1 max-w-4xl">
+            {/* Header */}
+            <div className="mb-8">
           <button
             onClick={() => router.back()}
             className="inline-flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors mb-6"
@@ -81,15 +85,20 @@ export default function PostDetailClient({ post }: PostDetailClientProps) {
           </motion.div>
         </div>
 
-        {/* Content */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white rounded-xl shadow-sm p-8"
-        >
-          <MarkdownRenderer content={post.content} />
-        </motion.div>
+            {/* Content */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-xl shadow-sm p-8"
+            >
+              <MarkdownRenderer content={post.content} />
+            </motion.div>
+          </div>
+
+          {/* Table of Contents - Right Sidebar */}
+          <TableOfContents content={post.content} />
+        </div>
       </div>
     </main>
   )
