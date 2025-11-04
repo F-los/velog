@@ -21,7 +21,7 @@ export default function TableOfContents({ content }: TableOfContentsProps) {
   useEffect(() => {
     // Extract headings from markdown content
     const headingRegex = /^(#{1,3})\s+(.+)$/gm
-    const matches = [...content.matchAll(headingRegex)]
+    const matches = Array.from(content.matchAll(headingRegex))
 
     const extractedHeadings: Heading[] = matches.map((match, index) => {
       const level = match[1].length // Number of # characters
