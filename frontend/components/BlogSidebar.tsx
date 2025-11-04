@@ -48,7 +48,7 @@ export default function BlogSidebar({
             try {
               const postsResponse = await apiClient.getPosts({
                 category: categoryName,
-                limit: '1'
+                limit: 1
               })
               return {
                 name: categoryName,
@@ -71,7 +71,7 @@ export default function BlogSidebar({
   const fetchTotalPosts = async () => {
     try {
       const { apiClient } = await import('@/lib/api')
-      const response = await apiClient.getPosts({ limit: '1' })
+      const response = await apiClient.getPosts({ limit: 1 })
       if (response.success && response.data) {
         setTotalPosts((response.data as any)?.length || 0)
       }

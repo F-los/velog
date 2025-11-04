@@ -50,7 +50,7 @@ export default function BlogPage() {
       if (searchQuery) {
         params.search = searchQuery;
       }
-      params.limit = '20';
+      params.limit = 20;
 
       const response = await apiClient.getPosts(params);
 
