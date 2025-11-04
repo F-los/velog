@@ -1,12 +1,19 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Folder, Hash, Search, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Folder, Hash, Search, X, ChevronDown, ChevronRight, FileText } from 'lucide-react'
+import Link from 'next/link'
 
 interface Category {
   name: string
   count: number
+  posts?: Post[]
+}
+
+interface Post {
+  id: number
+  title: string
 }
 
 interface BlogSidebarProps {
@@ -23,12 +30,11 @@ export default function BlogSidebar({
   onSearchChange,
 }: BlogSidebarProps) {
   const [categories, setCategories] = useState<Category[]>([])
-  const [totalPosts, setTotalPosts] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
 
   useEffect(() => {
     fetchCategories()
-    fetchTotalPosts()
   }, [])
 
   const fetchCategories = async () => {
@@ -38,41 +44,31 @@ export default function BlogSidebar({
       // 카테고리 목록 가져오기
       const categoriesResponse = await apiClient.getCategories()
       if (categoriesResponse.success && categoriesResponse.data) {
-        // 각 카테고리별 포스트 수 계산
-        const categoriesWithCount = await Promise.all(
+        // 각 카테고리별 포스트 목록 가져오기
+        const categoriesWithPosts = await Promise.all(
           categoriesResponse.data.map(async (categoryName: string) => {
             try {
               const postsResponse = await apiClient.getPosts({
                 category: categoryName,
-                limit: 1
+                limit: 100
               })
+              const posts = (postsResponse.data as any) || []
               return {
                 name: categoryName,
-                count: (postsResponse.data as any)?.length || 0
+                count: posts.length,
+                posts: posts.map((p: any) => ({ id: p.id, title: p.title }))
               }
             } catch {
-              return { name: categoryName, count: 0 }
+              return { name: categoryName, count: 0, posts: [] }
             }
           })
         )
-        setCategories(categoriesWithCount.filter(cat => cat.count > 0))
+        setCategories(categoriesWithPosts.filter(cat => cat.count > 0))
       }
     } catch (error) {
       console.error('Failed to fetch categories:', error)
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const fetchTotalPosts = async () => {
-    try {
-      const { apiClient } = await import('@/lib/api')
-      const response = await apiClient.getPosts({ limit: 1 })
-      if (response.success && response.data) {
-        setTotalPosts((response.data as any)?.length || 0)
-      }
-    } catch (error) {
-      console.error('Failed to fetch total posts:', error)
     }
   }
 
@@ -88,12 +84,12 @@ export default function BlogSidebar({
         animate={{ x: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         className="sticky top-0 left-0 h-screen w-80 bg-gradient-to-br from-white to-purple-50/30 border-r border-purple-100 overflow-y-auto hidden lg:block"
-        style={{ paddingTop: '100px' }}
+        style={{ paddingTop: '90px' }}
       >
-        <div className="p-6">
+        <div className="p-6 pt-2">
           {/* Search Section */}
-          <div className="mb-8">
-            <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
               <Search size={20} className="text-purple-600" />
               검색
             </h3>
@@ -113,25 +109,6 @@ export default function BlogSidebar({
                   <X size={18} />
                 </button>
               )}
-            </div>
-          </div>
-
-          {/* Stats Section */}
-          <div className="mb-8">
-            <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-xl p-5 border border-purple-200">
-              <h4 className="font-bold text-gray-900 mb-3 flex items-center gap-2">
-                <span className="text-xl">📊</span> 통계
-              </h4>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-700">전체 포스트</span>
-                  <span className="font-bold text-purple-700 text-lg">{totalPosts}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-700">카테고리</span>
-                  <span className="font-bold text-purple-700 text-lg">{categories.length}</span>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -170,33 +147,72 @@ export default function BlogSidebar({
                       ? 'bg-white/20 text-white'
                       : 'bg-gray-200 text-gray-600'
                   }`}>
-                    {totalPosts}
+                    {categories.reduce((sum, cat) => sum + cat.count, 0)}
                   </span>
                 </button>
 
                 {/* Individual Categories */}
                 {categories.map((category) => (
-                  <button
-                    key={category.name}
-                    onClick={() => onCategoryChange(category.name)}
-                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all transform hover:scale-[1.02] ${
-                      selectedCategory === category.name
-                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold shadow-md'
-                        : 'text-gray-700 hover:bg-purple-50 border border-gray-200'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Folder size={16} />
-                      <span className="truncate">{category.name}</span>
-                    </div>
-                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium flex-shrink-0 ${
-                      selectedCategory === category.name
-                        ? 'bg-white/20 text-white'
-                        : 'bg-gray-200 text-gray-600'
-                    }`}>
-                      {category.count}
-                    </span>
-                  </button>
+                  <div key={category.name}>
+                    <button
+                      onClick={() => {
+                        if (expandedCategory === category.name) {
+                          setExpandedCategory(null)
+                        } else {
+                          setExpandedCategory(category.name)
+                          onCategoryChange(category.name)
+                        }
+                      }}
+                      className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all transform hover:scale-[1.02] ${
+                        selectedCategory === category.name
+                          ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold shadow-md'
+                          : 'text-gray-700 hover:bg-purple-50 border border-gray-200'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {expandedCategory === category.name ? (
+                          <ChevronDown size={16} />
+                        ) : (
+                          <ChevronRight size={16} />
+                        )}
+                        <Folder size={16} />
+                        <span className="truncate">{category.name}</span>
+                      </div>
+                      <span className={`text-xs px-2.5 py-1 rounded-full font-medium flex-shrink-0 ${
+                        selectedCategory === category.name
+                          ? 'bg-white/20 text-white'
+                          : 'bg-gray-200 text-gray-600'
+                      }`}>
+                        {category.count}
+                      </span>
+                    </button>
+
+                    {/* Expandable Post List */}
+                    <AnimatePresence>
+                      {expandedCategory === category.name && category.posts && category.posts.length > 0 && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="mt-2 ml-8 space-y-1">
+                            {category.posts.map((post) => (
+                              <Link
+                                key={post.id}
+                                href={`/blog/${post.id}`}
+                                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors group"
+                              >
+                                <FileText size={14} className="flex-shrink-0 group-hover:text-purple-600" />
+                                <span className="truncate">{post.title}</span>
+                              </Link>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 ))}
 
                 {categories.length === 0 && !isLoading && (

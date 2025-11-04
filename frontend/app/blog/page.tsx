@@ -89,9 +89,30 @@ export default function BlogPage() {
 
           {/* Content Preview */}
           <p className="text-gray-600 mb-4 line-clamp-3 leading-relaxed flex-1">
-            {post.content.replace(/<[^>]*>/g, '').length > 150
-              ? post.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...'
-              : post.content.replace(/<[^>]*>/g, '')}
+            {(() => {
+              // Remove markdown syntax and HTML tags
+              let cleanContent = post.content
+                // Remove headers (# ## ###)
+                .replace(/^#{1,6}\s+/gm, '')
+                // Remove bold/italic (**text** *text*)
+                .replace(/\*\*([^*]+)\*\*/g, '$1')
+                .replace(/\*([^*]+)\*/g, '$1')
+                // Remove links [text](url)
+                .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+                // Remove inline code `code`
+                .replace(/`([^`]+)`/g, '$1')
+                // Remove code blocks ```code```
+                .replace(/```[\s\S]*?```/g, '')
+                // Remove HTML tags
+                .replace(/<[^>]*>/g, '')
+                // Remove extra whitespace
+                .replace(/\s+/g, ' ')
+                .trim()
+
+              return cleanContent.length > 150
+                ? cleanContent.substring(0, 150) + '...'
+                : cleanContent
+            })()}
           </p>
 
           {/* Tags */}
@@ -148,61 +169,25 @@ export default function BlogPage() {
 
         {/* Main Content */}
         <main className="flex-1 lg:ml-0">
-          {/* Hero Section */}
-          <section className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-blue-600 text-white py-24 overflow-hidden">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute inset-0" style={{
-                backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-                backgroundSize: '40px 40px'
-              }}></div>
-            </div>
+          {/* Hero Section - Compact */}
+          <section className="relative bg-gradient-to-br from-purple-600 to-blue-600 text-white py-12 overflow-hidden">
+            <div className="max-w-6xl mx-auto px-4 relative z-10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold mb-2">개발 블로그</h1>
+                  <p className="text-purple-100 text-sm">새로운 기술과 개발 경험을 공유합니다</p>
+                </div>
 
-            <div className="max-w-6xl mx-auto px-4 text-center relative z-10">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="inline-block mb-4"
-              >
-                <span className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
-                  ✨ Welcome to velog
-                </span>
-              </motion.div>
-
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-5xl md:text-6xl font-bold mb-6 leading-tight"
-              >
-                개발 블로그
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-xl md:text-2xl opacity-90 max-w-2xl mx-auto mb-10 leading-relaxed"
-              >
-                새로운 기술과 개발 경험을 공유하며,<br className="hidden md:block" />
-                함께 성장해나가는 공간입니다.
-              </motion.p>
-
-              {user && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
+                {user && (
                   <Link
                     href="/blog/write"
-                    className="inline-flex items-center gap-2 bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold hover:bg-purple-50 transition-all shadow-2xl hover:shadow-3xl hover:scale-105 transform duration-300"
+                    className="inline-flex items-center gap-2 bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-purple-50 transition-all shadow-lg hover:scale-105 transform duration-200"
                   >
-                    <PenTool size={20} />
-                    새 글 작성하기
+                    <PenTool size={18} />
+                    새 글 작성
                   </Link>
-                </motion.div>
-              )}
+                )}
+              </div>
             </div>
           </section>
 
