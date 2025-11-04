@@ -16,11 +16,13 @@ import { ProjectsModule } from './projects/projects.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    // ✅ Rate Limiting 설정 (개발 환경에서는 제한 완화)
-    ThrottlerModule.forRoot([{
-      ttl: 60000, // 60초
-      limit: process.env.NODE_ENV === 'production' ? 10 : 100,  // 개발: 100, 프로덕션: 10
-    }]),
+    // ✅ Rate Limiting 설정 (프로덕션에서만 활성화)
+    ...(process.env.NODE_ENV === 'production' ? [
+      ThrottlerModule.forRoot([{
+        ttl: 60000, // 60초
+        limit: 10,  // 프로덕션: 60초당 10개 요청
+      }])
+    ] : []),
     ...(process.env.DISABLE_DB !== 'true' ? [
       TypeOrmModule.forRoot({
         type: 'postgres',
@@ -42,11 +44,11 @@ import { ProjectsModule } from './projects/projects.module';
   controllers: [AppController],
   providers: [
     AppService,
-    // ✅ Global Rate Limiting Guard
-    {
+    // ✅ Global Rate Limiting Guard (프로덕션에서만)
+    ...(process.env.NODE_ENV === 'production' ? [{
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
-    },
+    }] : []),
   ],
 })
 export class AppModule {}
