@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, Tag, Search, Filter, PenTool, Menu } from 'lucide-react';
+import { Calendar, Clock, Tag, Search, Filter, PenTool } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import Navigation from '@/components/Navigation';
@@ -31,7 +31,6 @@ export default function BlogPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const { user } = useAuth();
 
@@ -145,23 +144,10 @@ export default function BlogPage() {
           onCategoryChange={setSelectedCategory}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
         />
 
         {/* Main Content */}
         <main className="flex-1 lg:ml-0">
-          {/* Mobile Sidebar Toggle */}
-          <div className="lg:hidden sticky top-20 z-30 bg-white border-b border-gray-200 px-4 py-3">
-            <button
-              onClick={() => setIsSidebarOpen(true)}
-              className="flex items-center gap-2 text-gray-600 hover:text-purple-600"
-            >
-              <Menu size={20} />
-              <span>필터 및 카테고리</span>
-            </button>
-          </div>
-
           {/* Hero Section */}
           <section className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-blue-600 text-white py-24 overflow-hidden">
             {/* Background Pattern */}

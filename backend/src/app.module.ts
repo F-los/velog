@@ -16,10 +16,10 @@ import { ProjectsModule } from './projects/projects.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    // ✅ Rate Limiting 설정
+    // ✅ Rate Limiting 설정 (개발 환경에서는 제한 완화)
     ThrottlerModule.forRoot([{
       ttl: 60000, // 60초
-      limit: 10,  // 60초당 10개 요청
+      limit: process.env.NODE_ENV === 'production' ? 10 : 100,  // 개발: 100, 프로덕션: 10
     }]),
     ...(process.env.DISABLE_DB !== 'true' ? [
       TypeOrmModule.forRoot({

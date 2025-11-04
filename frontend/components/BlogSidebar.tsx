@@ -14,8 +14,6 @@ interface BlogSidebarProps {
   onCategoryChange: (category: string) => void
   searchQuery: string
   onSearchChange: (query: string) => void
-  isOpen?: boolean
-  onClose?: () => void
 }
 
 export default function BlogSidebar({
@@ -23,8 +21,6 @@ export default function BlogSidebar({
   onCategoryChange,
   searchQuery,
   onSearchChange,
-  isOpen = true,
-  onClose
 }: BlogSidebarProps) {
   const [categories, setCategories] = useState<Category[]>([])
   const [totalPosts, setTotalPosts] = useState(0)
@@ -86,32 +82,15 @@ export default function BlogSidebar({
 
   return (
     <>
-      {/* Mobile Overlay */}
-      {isOpen && (
-        <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40" onClick={onClose} />
-      )}
-
       {/* Sidebar */}
       <motion.div
         initial={{ x: -300 }}
-        animate={{ x: isOpen ? 0 : -300 }}
+        animate={{ x: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className={`fixed lg:sticky top-0 left-0 h-screen lg:h-auto w-80 bg-gradient-to-br from-white to-purple-50/30 border-r border-purple-100 z-50 lg:z-auto overflow-y-auto ${
-          isOpen ? 'shadow-2xl lg:shadow-none' : ''
-        }`}
-        style={{ paddingTop: isOpen ? '80px' : '100px' }} // Account for navigation height
+        className="sticky top-0 left-0 h-screen w-80 bg-gradient-to-br from-white to-purple-50/30 border-r border-purple-100 overflow-y-auto hidden lg:block"
+        style={{ paddingTop: '100px' }}
       >
         <div className="p-6">
-          {/* Close Button (Mobile Only) */}
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="lg:hidden absolute top-6 right-6 text-gray-500 hover:text-gray-700"
-            >
-              <X size={24} />
-            </button>
-          )}
-
           {/* Search Section */}
           <div className="mb-8">
             <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
